@@ -10,6 +10,7 @@ The site is static: serve `index.html` (GitHub Pages or Cloudflare Pages).
 
 - Plato: Greek text of J. Burnet's *Platonis Opera* (Oxford), digitized by the Perseus Digital Library, CC BY-SA 4.0. See `data/plato/README.md`.
 - Kant: first editions of the *Critique of Pure Reason* (1781) and the *Critique of Judgment* (1790), transcribed by the Deutsches Textarchiv, CC BY-SA 4.0. See `data/kant/README.md`.
+- Marx: first editions of the three volumes of *Das Kapital* (1867, 1885, 1894), transcribed by the Deutsches Textarchiv, CC BY-SA 4.0. See `data/marx/README.md`.
 
 ---
 
