@@ -228,6 +228,17 @@ mark{background:var(--mark);color:inherit;border-radius:1px;padding:0 1px}
 .copyhint kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--rule);border-bottom-width:2px;border-radius:1px;padding:0 4px;background:var(--sheet)}
 .copyhint b{color:var(--accent)}
 .copyhint{flex-wrap:wrap;align-items:center}
+.refbox{margin-top:20px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding-block:14px}
+.refhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+#reftitle{font-family:var(--chrome);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+#reftitle b{font-weight:400;color:var(--accent)}
+.reftext{font-family:var(--text);font-size:15px;line-height:1.6;padding-left:2em;text-indent:-2em;overflow-wrap:anywhere;user-select:all}
+.reftext p{margin:0 0 6px}
+.reftext i{font-style:italic}
+.refhint{margin:12px 0 0;font-size:13px;color:var(--ink-soft)}
+.refhint kbd{font-family:var(--mono);font-size:12px;border:1px solid var(--rule);border-bottom-width:2px;padding:0 4px;background:var(--sheet)}
+.refhint b{font-weight:400;color:var(--accent)}
+.refbtn{font-family:var(--chrome)!important;font-size:12px!important;font-weight:400!important;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px!important}
 .refbtn{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--accent);color:var(--accent);background:var(--sheet);border-radius:1px;padding:6px 12px;white-space:nowrap}
 .refbtn:hover{background:var(--accent);color:var(--sheet)}
 .toast{white-space:pre-line;text-align:left}
@@ -324,7 +335,7 @@ const UI = {
     themeToDark:"Mudar para tema escuro", themeToLight:"Mudar para tema claro",
     citLbl:"Citar", plain:"Texto simples", cite:"Copiar referência",
     hint:(st)=>`Selecione um trecho e copie (<kbd>Ctrl</kbd>+<kbd>C</kbd>): ele sai entre aspas com a chamada em <b>${st}</b>, como “…” (Autor, ano, local). Troque a norma no topo da página.`,
-    refBtn:"Copiar referência bibliográfica",
+    refBtn:"Copiar referência", refTitle:"Como citar esta obra",
     hintPlain:"A cópia está em modo texto simples, sem referência. Escolha uma norma no topo da página para copiar como citação.",
     copiedQ:st=>`Trecho copiado como citação (${st})`,
     pickPer:"Escolha o período", pickAut:"Escolha o autor", pickObr:"Escolha a obra",
@@ -356,7 +367,7 @@ const UI = {
     themeToDark:"Switch to dark theme", themeToLight:"Switch to light theme",
     citLbl:"Cite", plain:"Plain text", cite:"Copy reference",
     hint:(st)=>`Select a passage and copy it (<kbd>Ctrl</kbd>+<kbd>C</kbd>): it is pasted in quotation marks with a <b>${st}</b> in-text citation, like “…” (Author, year, locator). Change the style at the top of the page.`,
-    refBtn:"Copy bibliographic reference",
+    refBtn:"Copy reference", refTitle:"How to cite this work",
     hintPlain:"Copying is set to plain text, with no reference. Choose a style at the top of the page to copy as a citation.",
     copiedQ:st=>`Passage copied as a citation (${st})`,
     pickPer:"Choose a period", pickAut:"Choose an author", pickObr:"Choose a work",
@@ -725,8 +736,12 @@ function renderReader(aid,wid,sid,pid){
           <span><b>${t("refsys")}</b> ${esc(loc(w.refsys))}</span>
         </div>
         <p class="about">${esc(w.about[L])}</p>
-        <div class="copyhint"><span id="copyhint" style="flex:1;min-width:0"></span>
-          <button class="refbtn" id="refbtn" data-a="${a.id}" data-w="${w.id}" data-s="${sec.id}"></button></div>
+        <section class="refbox" aria-labelledby="reftitle">
+          <div class="refhead"><span id="reftitle"></span>
+            <button class="refbtn" id="refbtn" data-a="${a.id}" data-w="${w.id}" data-s="${sec.id}"></button></div>
+          <div class="reftext" id="reftext" data-a="${a.id}" data-w="${w.id}" data-s="${sec.id}"></div>
+          <p class="refhint" id="copyhint"></p>
+        </section>
       </header>
       <h2 class="sec-title" lang="${a.lang}">${esc(sec.title)}</h2>
       <p class="sec-sub">${esc(sec.tr[L])}</p>
@@ -828,9 +843,17 @@ let toastTimer;
 function toast(msg){ const el=$("#toast"); el.textContent=msg; el.hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.hidden=true,2600); }
 function updateHint(){
   const h = document.getElementById("copyhint"); if(!h) return;
+  const st = CS==="plain" ? "abnt" : CS;
   h.innerHTML = CS==="plain" ? t("hintPlain") : t("hint")(STYLE_NAMES[CS]);
+  const rt = document.getElementById("reftext");
+  if(rt){
+    const f = findWork(rt.dataset.a,rt.dataset.w);
+    if(f) rt.innerHTML = citeParts(f.a,f.w,rt.dataset.s,"","",st).refH;
+  }
+  const tt = document.getElementById("reftitle");
+  if(tt) tt.innerHTML = `${t("refTitle")} · <b>${STYLE_NAMES[st]}</b>`;
   const rb = document.getElementById("refbtn");
-  if(rb) rb.textContent = `${t("refBtn")} (${STYLE_NAMES[CS==="plain"?"abnt":CS]})`;
+  if(rb) rb.textContent = t("refBtn");
 }
 function writeClip(plain,html,okMsg){
   try{
