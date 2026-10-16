@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="aletheia project: obras de filosofia em domínio público, reunidas num só lugar e lidas na língua original.">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>aletheia project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Cardo:ital@0;1&family=Marcellus&display=swap">
+<style>
+/* Layout: reading room — fixed index on the left, one measured text column, reference pagination in the margin like a critical edition. Palette: graphite and ochre. */
+:root{
+  --paper:#F6F5F2;
+  --sheet:#FCFBF9;
+  --ink:#1E1D1B;
+  --ink-soft:#615D57;
+  --rule:#DDDAD4;
+  --accent:#8A5A1C;
+  --accent-tint:#F3E8D6;
+  --mark:#F1DFA8;
+  --venetian:"Venetian301 BT", "Venetian 301 BT", "Venetian 301", "Centaur MT", "Centaur";
+  --display:"Libre Caslon Text", "Cardo", Georgia, serif;
+  --text:"Libre Caslon Text", "Cardo", "Iowan Old Style", Georgia, serif;
+  --ui:"Libre Caslon Text", "Cardo", "Iowan Old Style", Georgia, serif;
+  --mono:"Libre Caslon Text", "Cardo", Georgia, serif;
+  --chrome:"Marcellus", "Libre Caslon Text", Georgia, serif;
+  --brand:"Libre Caslon Text", "Cardo", Georgia, serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#1F1F1F; --sheet:#262625; --ink:#E4E2DE; --ink-soft:#9C9994; --rule:#383838;
+  --accent:#D2A266; --accent-tint:#3A3126; --mark:#5C4A24; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#1F1F1F; --sheet:#262625; --ink:#E4E2DE; --ink-soft:#9C9994; --rule:#383838;
+  --accent:#D2A266; --accent-tint:#3A3126; --mark:#5C4A24; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.5;font-variant-numeric:oldstyle-nums}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--sheet)}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:1px}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--sheet);border-bottom:1px solid var(--rule)}
+.top-in{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{font-family:var(--display);font-size:19px;font-weight:600;text-decoration:none;letter-spacing:.01em;white-space:nowrap}
+.brand i{font-weight:400;color:var(--accent)}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand .wm{font-family:var(--brand);font-weight:400;font-size:21px;letter-spacing:.01em;line-height:1}
+.brand .wm i{font-style:normal;color:var(--accent)}
+.brand .gk{font-weight:400;font-style:italic;font-size:15px;color:var(--accent);padding-right:10px;border-right:1px solid var(--rule)}
+@media (max-width:420px){.brand .gk{display:none}}
+.search{flex:1 1 240px;min-width:0;position:relative}
+.search input{width:100%;font:inherit;padding:8px 12px 8px 34px;border:1px solid var(--rule);border-radius:1px;background:var(--paper);color:var(--ink)}
+.search input:focus{outline:none;border-color:var(--accent)}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink-soft)}
+.lang{display:flex;border:1px solid var(--rule);border-radius:1px;overflow:hidden}
+.lang button{background:none;border:0;padding:6px 10px;font-size:13px;font-weight:500;letter-spacing:.04em;color:var(--ink-soft)}
+.lang button[aria-pressed="true"]{background:var(--accent);color:var(--sheet)}
+
+/* cascading picker */
+.picker{border-top:1px solid var(--rule)}
+.picker-in{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:end;
+  padding-block:10px 12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.fld{display:flex;flex-direction:column;gap:3px;min-width:0}
+.fld span{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-soft);display:flex;gap:6px;align-items:center}
+.fld span i{font-style:normal;font-family:var(--mono);color:var(--accent)}
+.fld select{appearance:none;-webkit-appearance:none;width:100%;min-width:0;font:inherit;font-size:14px;color:var(--ink);
+  background-color:var(--paper);border:1px solid var(--rule);border-radius:1px;padding:8px 34px 8px 11px;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink-soft) 50%),linear-gradient(135deg,var(--ink-soft) 50%,transparent 50%);
+  background-position:calc(100% - 17px) 52%,calc(100% - 12px) 52%;background-size:5px 5px;background-repeat:no-repeat;
+  text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
+.fld select:hover:not(:disabled){border-color:var(--ink-soft)}
+.fld select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)}
+.fld select:disabled{opacity:.5;cursor:not-allowed}
+.go{font:inherit;font-size:14px;font-weight:400;letter-spacing:.06em;border:0;border-radius:1px;padding:9px 18px;background:var(--accent);color:var(--sheet);white-space:nowrap}
+.go:disabled{opacity:.35;cursor:not-allowed}
+@media (max-width:760px){
+  .top{position:static}
+  .para{scroll-margin-top:16px}
+  .picker-in{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .picker-in .fld:nth-child(3){grid-column:1/-1}
+  .go{grid-column:1/-1}
+}
+.howto{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;border-top:1px solid var(--ink);padding-block:24px 64px}
+.howto div{min-width:0}
+.howto b{display:block;font-family:var(--display);font-weight:500;font-size:19px;margin-bottom:6px}
+.howto p{margin:0;font-size:14px;color:var(--ink-soft)}
+.howto .n{font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:6px;display:block}
+@media (max-width:760px){.howto{grid-template-columns:minmax(0,1fr)}}
+
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* home */
+.intro{padding-block:56px 32px;max-width:720px}
+.intro h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,5vw,46px);line-height:1.12;margin:0 0 16px;text-wrap:balance}
+.intro h1 em{color:var(--accent)}
+.intro p{color:var(--ink-soft);font-size:16px;max-width:60ch;margin:0}
+.stats{margin-top:20px;font-family:var(--mono);font-size:12px;color:var(--ink-soft);letter-spacing:.02em}
+.authors{border-top:1px solid var(--ink);margin-bottom:64px}
+.author{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:24px;padding-block:24px;border-bottom:1px solid var(--rule)}
+.author h2{font-family:var(--display);font-weight:500;font-size:24px;margin:0}
+.author .life{font-family:var(--mono);font-size:12px;color:var(--ink-soft);margin-top:4px}
+.author .langs{font-size:12px;color:var(--ink-soft);margin-top:8px;text-transform:uppercase;letter-spacing:.08em}
+.works{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.works a{display:grid;grid-template-columns:3.5rem minmax(0,1fr);gap:12px;padding:8px 10px;margin-inline:-10px;border-radius:1px;text-decoration:none}
+.works a:hover{background:var(--accent-tint)}
+.works .yr{font-family:var(--mono);font-size:13px;color:var(--ink-soft);padding-top:3px;font-variant-numeric:tabular-nums}
+.works .ot{font-family:var(--text);font-style:italic;font-size:17px}
+.works .tt{font-size:13px;color:var(--ink-soft)}
+
+/* periods (home) */
+.eras{border-top:1px solid var(--ink);margin-bottom:64px}
+.era{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr) minmax(0,1.1fr) 24px;gap:8px 28px;align-items:baseline;
+  padding:26px 12px;margin-inline:-12px;border-bottom:1px solid var(--rule);text-decoration:none;border-radius:1px;transition:background .15s}
+a.era:hover{background:var(--accent-tint)}
+.era .span{font-family:var(--mono);font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.era h2{font-family:var(--display);font-weight:400;font-size:clamp(24px,3.4vw,34px);line-height:1.1;margin:0}
+.era p{margin:6px 0 0;font-size:14px;color:var(--ink-soft)}
+.era .who{font-family:var(--text);font-size:16px;line-height:1.5}
+.era .who small{display:block;font-family:var(--ui);font-size:12px;color:var(--ink-soft);margin-top:4px;letter-spacing:.02em}
+.era .arr{color:var(--accent);font-size:20px;align-self:center}
+.era.off{opacity:.55}
+.era.off .who{font-family:var(--ui);font-size:13px;color:var(--ink-soft);font-style:italic}
+
+/* period + author pages */
+.crumbs{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);padding-top:28px}
+.crumbs a{text-decoration:none}
+.crumbs a:hover{color:var(--accent)}
+.phead{padding-block:14px 28px;max-width:720px}
+.phead .span{font-family:var(--mono);font-size:13px;color:var(--ink-soft)}
+.phead h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,5vw,44px);line-height:1.1;margin:6px 0 10px;text-wrap:balance}
+.phead p{margin:0;color:var(--ink-soft);font-size:16px;max-width:60ch}
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;border-top:1px solid var(--ink);padding-top:24px;margin-bottom:64px}
+.acard{display:flex;flex-direction:column;gap:6px;padding:20px;border:1px solid var(--rule);border-radius:1px;background:var(--sheet);text-decoration:none;transition:border-color .15s}
+.acard:hover{border-color:var(--accent)}
+.acard h2{font-family:var(--display);font-weight:500;font-size:22px;line-height:1.2;margin:0}
+.acard .life{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+.acard .ws{margin-top:10px;font-family:var(--text);font-style:italic;font-size:14px;color:var(--ink-soft);line-height:1.45}
+.acard .foot{margin-top:auto;padding-top:12px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.alist{border-top:1px solid var(--ink);padding-top:12px;margin-bottom:64px;max-width:820px}
+@media (max-width:760px){
+  .era{grid-template-columns:minmax(0,1fr) 24px}
+  .era .span{grid-column:1/-1;order:-1}
+  .era .who{grid-column:1/2}
+  .era .arr{grid-row:2}
+}
+
+/* reader */
+.reader{display:grid;grid-template-columns:260px minmax(0,1fr);gap:48px;padding-block:32px 80px}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 150px);align-self:start;max-height:calc(100vh - 170px);overflow:auto;font-size:14px}
+.toc-toggle{display:none}
+.crumb{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:12px}
+.crumb a{text-decoration:none}
+.crumb a:hover{color:var(--accent)}
+.toc h3{font-family:var(--display);font-weight:500;font-size:18px;margin:0 0 4px}
+.toc .tocw{margin-bottom:18px}
+.toc .tocw > a{display:block;text-decoration:none;font-family:var(--text);font-style:italic;padding:4px 0;color:var(--ink-soft)}
+.toc .tocw > a.cur{color:var(--ink);font-weight:500}
+.toc ol{list-style:none;margin:2px 0 6px;padding:0 0 0 12px;border-left:1px solid var(--rule)}
+.toc li a,.toc li span{display:block;padding:4px 8px;text-decoration:none;border-radius:1px}
+.toc li a:hover{background:var(--accent-tint)}
+.toc li a.cur{color:var(--accent);font-weight:600}
+.toc li span{color:var(--ink-soft);opacity:.6}
+.toc li span small{font-size:11px}
+
+.page{min-width:0;max-width:760px}
+.whead{border-bottom:1px solid var(--rule);padding-bottom:20px;margin-bottom:28px}
+.whead .who{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft)}
+.whead h1{font-family:var(--display);font-weight:400;font-style:italic;font-size:clamp(26px,4vw,36px);line-height:1.15;margin:6px 0 4px;text-wrap:balance}
+.whead .trans{font-size:15px;color:var(--ink-soft)}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:13px;color:var(--ink-soft)}
+.meta b{font-weight:600;color:var(--ink)}
+.about{margin-top:14px;font-size:14px;color:var(--ink-soft);max-width:62ch}
+.sec-title{font-family:var(--display);font-weight:500;font-size:21px;margin:0 0 4px}
+.sec-sub{font-size:13px;color:var(--ink-soft);margin:0 0 24px}
+
+.para{display:grid;grid-template-columns:5.5rem minmax(0,1fr) 2rem;gap:0 14px;padding:6px 0;margin:0 -8px;padding-inline:8px;border-radius:1px;scroll-margin-top:170px}
+.para .ref{font-family:var(--mono);font-size:12px;font-style:italic;color:var(--accent);text-align:right;padding-top:6px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.para .tx{font-family:var(--text);font-size:17px;line-height:1.75;hyphens:auto;-webkit-hyphens:auto;max-width:62ch;margin:0}
+.para .cite{opacity:0;align-self:start;margin-top:6px;border:1px solid var(--rule);background:var(--sheet);border-radius:1px;width:28px;height:28px;display:grid;place-items:center;color:var(--ink-soft);transition:opacity .15s}
+.para:hover .cite,.para .cite:focus-visible{opacity:1}
+.para.hit{background:var(--accent-tint)}
+mark{background:var(--mark);color:inherit;border-radius:1px;padding:0 1px}
+.pend{border:1px dashed var(--rule);border-radius:1px;padding:20px;color:var(--ink-soft);font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--rule);font-size:14px}
+.pager a{text-decoration:none;color:var(--accent);max-width:48%}
+.pager a small{display:block;color:var(--ink-soft);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.note{font-size:12px;color:var(--ink-soft);margin-top:28px;font-style:italic}
+
+/* search */
+.sres{padding-block:32px 80px;max-width:820px}
+.sres h1{font-family:var(--display);font-weight:400;font-size:28px;margin:0 0 6px}
+.sres .hint{color:var(--ink-soft);font-size:14px;margin:0 0 18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.chip{border:1px solid var(--rule);background:var(--sheet);border-radius:1px;padding:4px 12px;font-size:13px}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--sheet)}
+.res{display:block;text-decoration:none;padding:14px 0;border-bottom:1px solid var(--rule)}
+.res .where{font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em}
+.res .where b{color:var(--accent);font-family:var(--mono);font-weight:500;text-transform:none;letter-spacing:0}
+.res .snip{font-family:var(--text);font-size:16px;line-height:1.6;margin-top:4px}
+.res:hover .snip{color:var(--accent)}
+.try{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft);align-items:center}
+.try button{border:1px solid var(--rule);background:var(--sheet);border-radius:1px;padding:2px 8px;font-family:var(--text);font-style:italic}
+
+.themebtn{display:grid;place-items:center;width:34px;height:32px;border:1px solid var(--rule);border-radius:1px;background:var(--paper);color:var(--ink)}
+.themebtn:hover{border-color:var(--ink-soft)}
+.themebtn .moon{display:none}
+:root[data-theme="dark"] .themebtn .sun{display:none}
+:root[data-theme="dark"] .themebtn .moon{display:block}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .themebtn .sun{display:none} :root:not([data-theme="light"]) .themebtn .moon{display:block} }
+.citesel{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em}
+.citesel select{appearance:none;-webkit-appearance:none;font:inherit;font-size:13px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--ink);
+  background-color:var(--paper);border:1px solid var(--rule);border-radius:1px;padding:6px 26px 6px 10px;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink-soft) 50%),linear-gradient(135deg,var(--ink-soft) 50%,transparent 50%);
+  background-position:calc(100% - 13px) 52%,calc(100% - 8px) 52%;background-size:5px 5px;background-repeat:no-repeat}
+.citesel select:focus{outline:none;border-color:var(--accent)}
+.copyhint{display:flex;gap:8px;align-items:flex-start;margin-top:16px;padding:10px 12px;border-radius:1px;background:var(--accent-tint);font-size:13px;color:var(--ink)}
+.copyhint kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--rule);border-bottom-width:2px;border-radius:1px;padding:0 4px;background:var(--sheet)}
+.copyhint b{color:var(--accent)}
+.copyhint{flex-wrap:wrap;align-items:center}
+.refbtn{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--accent);color:var(--accent);background:var(--sheet);border-radius:1px;padding:6px 12px;white-space:nowrap}
+.refbtn:hover{background:var(--accent);color:var(--sheet)}
+.toast{white-space:pre-line;text-align:left}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:1px;font-size:13px;max-width:calc(100% - 32px)}
+
+@media (max-width:860px){
+  .reader{grid-template-columns:minmax(0,1fr);gap:20px;padding-top:20px}
+  .toc{position:static;max-height:none;border:1px solid var(--rule);border-radius:1px;padding:12px;background:var(--sheet)}
+  .toc-toggle{display:flex;justify-content:space-between;width:100%;background:none;border:0;padding:0;font-weight:600}
+  .toc-body{margin-top:12px}
+  .toc.closed .toc-body{display:none}
+  .author{grid-template-columns:minmax(0,1fr);gap:12px}
+}
+@media (max-width:560px){
+  .para{grid-template-columns:minmax(0,1fr) 2rem}
+  .para .ref{grid-column:1/-1;text-align:left;padding-top:0}
+  .para .cite{opacity:1}
+  .para .tx{font-size:17px}
+}
+/* top bar in Marcellus: Roman-inscription capitals for labels, regular case in the menus */
+.top .search input,.top .lang button,.top .citesel,.top .citesel select,.picker .fld select,.picker .go{font-family:var(--chrome)}
+.top .search input{font-size:14px}
+.top .lang button{font-size:12px;letter-spacing:.1em}
+.top .citesel{font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.top .citesel select{font-size:14px;letter-spacing:.02em;text-transform:none}
+.picker .fld span{font-family:var(--chrome);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.picker .fld span i{font-family:var(--chrome);font-style:normal;letter-spacing:0}
+.picker .fld select{font-size:14px;letter-spacing:.02em}
+.picker .go{font-size:13px;font-weight:400;letter-spacing:.14em;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#"><span class="gk" lang="grc">ἀλήθεια</span><span class="wm">aletheia <i>project</i></span></a>
+    <label class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" autocomplete="off" spellcheck="false">
+    </label>
+    <div class="lang" role="group" aria-label="Language">
+      <button id="lang-pt" data-l="pt">PT</button>
+      <button id="lang-en" data-l="en">EN</button>
+    </div>
+    <button class="themebtn" id="themebtn" type="button">
+      <svg class="sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+    <label class="citesel"><span id="lb-cit"></span>
+      <select id="sel-cit">
+        <option value="abnt">ABNT</option>
+        <option value="apa">APA</option>
+        <option value="chicago">Chicago</option>
+        <option value="mla">MLA</option>
+        <option value="plain"></option>
+      </select>
+    </label>
+  </div>
+  <div class="picker">
+    <div class="picker-in">
+      <label class="fld"><span><i>1</i><b id="lb-per"></b></span><select id="sel-per"></select></label>
+      <label class="fld"><span><i>2</i><b id="lb-aut"></b></span><select id="sel-aut"></select></label>
+      <label class="fld"><span><i>3</i><b id="lb-obr"></b></span><select id="sel-obr"></select></label>
+      <button class="go" id="go"></button>
+    </div>
+  </div>
+</header>
+<main id="app" class="wrap"></main>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+const UI = {
+  pt:{
+    search:"Buscar em todo o acervo…",
+    h1:"Filosofia em domínio público, <em>num só lugar</em>.",
+    lead:"Obras completas lidas na língua original, com a mesma navegação para todos os autores, paginação de referência na margem e citação com um clique.",
+    stats:(a,w)=>`${a} autores · ${w} obras · protótipo`,
+    works:"obras", contents:"Sumário", library:"Acervo",
+    written:"Escrita", published:"Publicação", base:"Texto-base", lang:"Língua", refsys:"Citação",
+    pending:"em preparação",
+    pendBody:"Esta seção faz parte da estrutura da obra, mas o texto ainda não foi incluído no protótipo.",
+    prev:"Anterior", next:"Seguinte",
+    cite:"Copiar citação", copied:"Citação copiada", copyFail:"Não foi possível copiar. Selecione o texto da citação manualmente.",
+    note:"Protótipo: trechos curtos de cada obra; a paginação de referência é indicativa.",
+    sres:"Busca", hintS:"A busca ignora diferenças de grafia antiga (Theil/Teil, Waare/Ware, ß/ss) e acentos.",
+    all:"Todos", none:"Nenhum trecho encontrado.", found:n=>`${n} ${n===1?"trecho":"trechos"}`,
+    tryit:"Experimente:",
+    langs:{de:"alemão",la:"latim",grc:"grego antigo"},
+    authorsN:n=>`${n} ${n===1?"autor":"autores"}`, worksN:n=>`${n} ${n===1?"obra":"obras"}`,
+    soon:"Em preparação", choose:"Escolha um período para começar.",
+    open:"Ver obras", periodLbl:"Período",
+    lPer:"Período", lAut:"Autor", lObr:"Obra", read:"Ler",
+    themeToDark:"Mudar para tema escuro", themeToLight:"Mudar para tema claro",
+    citLbl:"Citar", plain:"Texto simples", cite:"Copiar referência",
+    hint:(st)=>`Selecione um trecho e copie (<kbd>Ctrl</kbd>+<kbd>C</kbd>): ele sai entre aspas com a chamada em <b>${st}</b>, como “…” (Autor, ano, local). Troque a norma no topo da página.`,
+    refBtn:"Copiar referência bibliográfica",
+    hintPlain:"A cópia está em modo texto simples, sem referência. Escolha uma norma no topo da página para copiar como citação.",
+    copiedQ:st=>`Trecho copiado como citação (${st})`,
+    pickPer:"Escolha o período", pickAut:"Escolha o autor", pickObr:"Escolha a obra",
+    choose2:"Use os menus acima: período, autor e obra.",
+    how:[["Período","Da filosofia antiga ao século XX. Períodos ainda sem textos aparecem como “em preparação”."],
+         ["Autor","Só aparecem os autores do período escolhido, com datas e língua original."],
+         ["Obra","Escolha a obra e clique em Ler para abrir o texto no original."]]
+  },
+  en:{
+    search:"Search the whole collection…",
+    h1:"Public-domain philosophy, <em>in one place</em>.",
+    lead:"Complete works read in the original language, with the same navigation for every author, reference pagination in the margin and one-click citation.",
+    stats:(a,w)=>`${a} authors · ${w} works · prototype`,
+    works:"works", contents:"Contents", library:"Collection",
+    written:"Written", published:"Published", base:"Base text", lang:"Language", refsys:"Citation",
+    pending:"in preparation",
+    pendBody:"This section is part of the work's structure, but its text is not included in the prototype yet.",
+    prev:"Previous", next:"Next",
+    cite:"Copy citation", copied:"Citation copied", copyFail:"Couldn't copy. Select the citation text manually.",
+    note:"Prototype: short excerpts from each work; reference pagination is indicative.",
+    sres:"Search", hintS:"Search ignores old spelling (Theil/Teil, Waare/Ware, ß/ss) and diacritics.",
+    all:"All", none:"No passages found.", found:n=>`${n} ${n===1?"passage":"passages"}`,
+    tryit:"Try:",
+    langs:{de:"German",la:"Latin",grc:"Ancient Greek"},
+    authorsN:n=>`${n} ${n===1?"author":"authors"}`, worksN:n=>`${n} ${n===1?"work":"works"}`,
+    soon:"In preparation", choose:"Choose a period to start.",
+    open:"See works", periodLbl:"Period",
+    lPer:"Period", lAut:"Author", lObr:"Work", read:"Read",
+    themeToDark:"Switch to dark theme", themeToLight:"Switch to light theme",
+    citLbl:"Cite", plain:"Plain text", cite:"Copy reference",
+    hint:(st)=>`Select a passage and copy it (<kbd>Ctrl</kbd>+<kbd>C</kbd>): it is pasted in quotation marks with a <b>${st}</b> in-text citation, like “…” (Author, year, locator). Change the style at the top of the page.`,
+    refBtn:"Copy bibliographic reference",
+    hintPlain:"Copying is set to plain text, with no reference. Choose a style at the top of the page to copy as a citation.",
+    copiedQ:st=>`Passage copied as a citation (${st})`,
+    pickPer:"Choose a period", pickAut:"Choose an author", pickObr:"Choose a work",
+    choose2:"Use the menus above: period, author and work.",
+    how:[["Period","From ancient philosophy to the twentieth century. Periods without texts yet show as “in preparation”."],
+         ["Author","Only authors from the chosen period are listed, with dates and original language."],
+         ["Work","Pick the work and click Read to open the text in its original language."]]
+  }
+};
+
+const P = (ref,t)=>({ref,t});
+const PERIODS = [
+ {id:"antiga", name:{pt:"Filosofia antiga",en:"Ancient philosophy"}, span:{pt:"séc. VI a.C. – séc. VI",en:"6th c. BC – 6th c. AD"},
+  blurb:{pt:"Dos pré-socráticos ao fechamento das escolas de Atenas.",en:"From the Presocratics to the closing of the Athenian schools."}},
+ {id:"medieval", name:{pt:"Filosofia medieval",en:"Medieval philosophy"}, span:{pt:"séc. IV – séc. XIV",en:"4th – 14th c."},
+  blurb:{pt:"Patrística e escolástica, em latim, grego e árabe.",en:"Patristics and scholasticism, in Latin, Greek and Arabic."}},
+ {id:"moderna", name:{pt:"Filosofia moderna",en:"Modern philosophy"}, span:{pt:"séc. XVII – XVIII",en:"17th – 18th c."},
+  blurb:{pt:"Do racionalismo ao criticismo kantiano.",en:"From rationalism to Kant's critical philosophy."}},
+ {id:"xix", name:{pt:"Século XIX",en:"Nineteenth century"}, span:{pt:"1800 – 1900",en:"1800 – 1900"},
+  blurb:{pt:"Idealismo alemão, crítica da economia política e seus herdeiros.",en:"German idealism, the critique of political economy and their heirs."}},
+ {id:"xx", name:{pt:"Século XX",en:"Twentieth century"}, span:{pt:"1900 –",en:"1900 –"},
+  blurb:{pt:"A maior parte ainda está protegida por direito autoral e entra no acervo ano a ano.",en:"Most of it is still under copyright and joins the collection year by year."}}
+];
+const DATA = [
+ { id:"aristoteles", period:"antiga", name:"Aristóteles", life:"384–322 a.C.", lang:"grc", works:[
+   { id:"met", title:"Τὰ μετὰ τὰ φυσικά", tr:{pt:"Metafísica",en:"Metaphysics"},
+     year:"séc. IV a.C.", pub:"Ed. Bekker, Berlin 1831", base:"Aristotelis Opera, ed. I. Bekker", refsys:"Bekker",
+     about:{pt:"Cita-se pela paginação de Bekker: página, coluna (a/b) e linha.",en:"Cited by Bekker pagination: page, column (a/b) and line."},
+     secs:[
+      {id:"a", title:"Α (I)", tr:{pt:"Livro I (Alfa)",en:"Book I (Alpha)"}, paras:[
+        P("980a21","Πάντες ἄνθρωποι τοῦ εἰδέναι ὀρέγονται φύσει."),
+        P("980a22","σημεῖον δ᾽ ἡ τῶν αἰσθήσεων ἀγάπησις· καὶ γὰρ χωρὶς τῆς χρείας ἀγαπῶνται δι᾽ αὑτάς, καὶ μάλιστα τῶν ἄλλων ἡ διὰ τῶν ὀμμάτων.")]},
+      {id:"alpha", title:"α (II)", tr:{pt:"Livro II (alfa menor)",en:"Book II (little alpha)"}},
+      {id:"z", title:"Ζ (VII)", tr:{pt:"Livro VII (Zeta)",en:"Book VII (Zeta)"}},
+      {id:"l", title:"Λ (XII)", tr:{pt:"Livro XII (Lambda)",en:"Book XII (Lambda)"}}
+     ]}
+ ]},
+ { id:"agostinho", period:"medieval", name:"Agostinho de Hipona", life:"354–430", lang:"la", works:[
+   { id:"conf", title:"Confessiones", tr:{pt:"Confissões",en:"Confessions"},
+     year:"c. 397–400", pub:"c. 400", base:"Tradição manuscrita, texto latino corrente", refsys:"Livro, capítulo, parágrafo",
+     about:{pt:"Treze livros; cita-se por livro, capítulo e parágrafo.",en:"Thirteen books; cited by book, chapter and paragraph."},
+     secs:[
+      {id:"l1", title:"Liber primus", tr:{pt:"Livro I",en:"Book I"}, paras:[
+        P("I, 1, 1","Magnus es, domine, et laudabilis valde: magna virtus tua, et sapientiae tuae non est numerus."),
+        P("I, 1, 1","Tu excitas, ut laudare te delectet, quia fecisti nos ad te et inquietum est cor nostrum, donec requiescat in te.")]},
+      {id:"l10", title:"Liber decimus", tr:{pt:"Livro X",en:"Book X"}},
+      {id:"l11", title:"Liber undecimus", tr:{pt:"Livro XI",en:"Book XI"}}
+     ]}
+ ]},
+ { id:"spinoza", period:"moderna", name:"Baruch de Spinoza", life:"1632–1677", lang:"la", works:[
+   { id:"ethica", title:"Ethica ordine geometrico demonstrata", tr:{pt:"Ética demonstrada em ordem geométrica",en:"Ethics, Demonstrated in Geometrical Order"},
+     year:"1677", pub:"1677 (Opera posthuma)", base:"Opera posthuma, Amsterdam 1677", refsys:"E[parte][def/ax/prop]",
+     about:{pt:"Publicada postumamente. Cita-se por parte e elemento: E1def3 = Parte I, definição 3.",en:"Published posthumously. Cited by part and element: E1def3 = Part I, definition 3."},
+     secs:[
+      {id:"p1", title:"Pars prima. De Deo", tr:{pt:"Parte I. De Deus",en:"Part I. Of God"}, paras:[
+        P("E1def1","Per causam sui intelligo id, cujus essentia involvit existentiam, sive id, cujus natura non potest concipi, nisi existens."),
+        P("E1def3","Per substantiam intelligo id, quod in se est, et per se concipitur: hoc est id, cujus conceptus non indiget conceptu alterius rei, a quo formari debeat."),
+        P("E1def6","Per Deum intelligo ens absolute infinitum, hoc est, substantiam constantem infinitis attributis, quorum unumquodque aeternam, et infinitam essentiam exprimit.")]},
+      {id:"p2", title:"Pars secunda. De natura et origine mentis", tr:{pt:"Parte II. Da natureza e origem da mente",en:"Part II. Of the Nature and Origin of the Mind"}},
+      {id:"p3", title:"Pars tertia. De origine et natura affectuum", tr:{pt:"Parte III. Da origem e natureza dos afetos",en:"Part III. Of the Origin and Nature of the Affects"}}
+     ]}
+ ]},
+ { id:"kant", period:"moderna", name:"Immanuel Kant", life:"1724–1804", lang:"de", works:[
+   { id:"krv", title:"Kritik der reinen Vernunft", tr:{pt:"Crítica da razão pura",en:"Critique of Pure Reason"},
+     year:"1781/87", pub:"A 1781 · B 1787", base:"Akademie-Ausgabe, Bd. III–IV (grafia modernizada)", refsys:"A / B",
+     about:{pt:"Cita-se pelas páginas da 1ª (A) e da 2ª edição (B), marcadas na margem.",en:"Cited by the pages of the 1st (A) and 2nd (B) editions, shown in the margin."},
+     secs:[
+      {id:"vorr", title:"Vorrede zur zweiten Auflage", tr:{pt:"Prefácio à 2ª edição",en:"Preface to the 2nd edition"}},
+      {id:"einl", title:"Einleitung. I. Von dem Unterschiede der reinen und empirischen Erkenntnis", tr:{pt:"Introdução. I. Da diferença entre conhecimento puro e empírico",en:"Introduction. I. On the difference between pure and empirical cognition"}, paras:[
+        P("B 1","Daß alle unsere Erkenntnis mit der Erfahrung anfange, daran ist gar kein Zweifel; denn wodurch sollte das Erkenntnisvermögen sonst zur Ausübung erweckt werden, geschähe es nicht durch Gegenstände, die unsere Sinne rühren und teils von selbst Vorstellungen bewirken, teils unsere Verstandestätigkeit in Bewegung bringen, diese zu vergleichen, sie zu verknüpfen oder zu trennen, und so den rohen Stoff sinnlicher Eindrücke zu einer Erkenntnis der Gegenstände zu verarbeiten, die Erfahrung heißt? Der Zeit nach geht also keine Erkenntnis in uns vor der Erfahrung vorher, und mit dieser fängt alle an."),
+        P("B 1–2","Wenn aber gleich alle unsere Erkenntnis mit der Erfahrung anhebt, so entspringt sie darum doch nicht eben alle aus der Erfahrung. Denn es könnte wohl sein, daß selbst unsere Erfahrungserkenntnis ein Zusammengesetztes aus dem sei, was wir durch Eindrücke empfangen, und dem, was unser eigenes Erkenntnisvermögen (durch sinnliche Eindrücke bloß veranlaßt) aus sich selbst hergibt, welchen Zusatz wir von jenem Grundstoffe nicht eher unterscheiden, als bis lange Übung uns darauf aufmerksam und in der Absonderung desselben geschickt gemacht hat.")]},
+      {id:"aest", title:"Transzendentale Ästhetik", tr:{pt:"Estética transcendental",en:"Transcendental Aesthetic"}},
+      {id:"logik", title:"Transzendentale Logik", tr:{pt:"Lógica transcendental",en:"Transcendental Logic"}}
+     ]},
+   { id:"aufkl", title:"Beantwortung der Frage: Was ist Aufklärung?", tr:{pt:"Resposta à pergunta: Que é Esclarecimento?",en:"An Answer to the Question: What Is Enlightenment?"},
+     year:"1784", pub:"Berlinische Monatsschrift, Dez. 1784", base:"Akademie-Ausgabe, Bd. VIII (grafia modernizada)", refsys:"AA",
+     about:{pt:"Ensaio curto; cita-se pelo volume e página da Akademie-Ausgabe.",en:"Short essay; cited by Akademie-Ausgabe volume and page."},
+     secs:[
+      {id:"text", title:"Text", tr:{pt:"Texto",en:"Text"}, paras:[
+        P("AA VIII, 35","Aufklärung ist der Ausgang des Menschen aus seiner selbstverschuldeten Unmündigkeit. Unmündigkeit ist das Unvermögen, sich seines Verstandes ohne Leitung eines anderen zu bedienen. Selbstverschuldet ist diese Unmündigkeit, wenn die Ursache derselben nicht am Mangel des Verstandes, sondern der Entschließung und des Mutes liegt, sich seiner ohne Leitung eines andern zu bedienen. Sapere aude! Habe Mut, dich deines eigenen Verstandes zu bedienen! ist also der Wahlspruch der Aufklärung."),
+        P("AA VIII, 35","Faulheit und Feigheit sind die Ursachen, warum ein so großer Teil der Menschen, nachdem sie die Natur längst von fremder Leitung freigesprochen (naturaliter maiorennes), dennoch gerne zeitlebens unmündig bleiben; und warum es anderen so leicht wird, sich zu deren Vormündern aufzuwerfen. Es ist so bequem, unmündig zu sein. Habe ich ein Buch, das für mich Verstand hat, einen Seelsorger, der für mich Gewissen hat, einen Arzt, der für mich die Diät beurteilt, usw., so brauche ich mich ja nicht selbst zu bemühen. Ich habe nicht nötig zu denken, wenn ich nur bezahlen kann; andere werden das verdrießliche Geschäft schon für mich übernehmen.")]}
+     ]}
+ ]},
+ { id:"hegel", period:"xix", name:"Georg Wilhelm Friedrich Hegel", life:"1770–1831", lang:"de", works:[
+   { id:"phg", title:"Phänomenologie des Geistes", tr:{pt:"Fenomenologia do Espírito",en:"Phenomenology of Spirit"},
+     year:"1807", pub:"Bamberg/Würzburg 1807", base:"1ª edição (grafia modernizada)", refsys:"¶",
+     about:{pt:"Cita-se aqui pela numeração de parágrafos (¶) usada na literatura secundária.",en:"Cited here by the paragraph numbering (¶) used in the secondary literature."},
+     secs:[
+      {id:"vorr", title:"Vorrede", tr:{pt:"Prefácio",en:"Preface"}, paras:[
+        P("¶ 2","Die Knospe verschwindet in dem Hervorbrechen der Blüte, und man könnte sagen, daß jene von dieser widerlegt wird; ebenso wird durch die Frucht die Blüte für ein falsches Dasein der Pflanze erklärt, und als ihre Wahrheit tritt diese an die Stelle von jener. Diese Formen unterscheiden sich nicht nur, sondern verdrängen sich auch als unverträglich miteinander. Aber ihre flüssige Natur macht sie zugleich zu Momenten der organischen Einheit, worin sie sich nicht nur nicht widerstreiten, sondern eins so notwendig als das andere ist, und diese gleiche Notwendigkeit macht erst das Leben des Ganzen aus."),
+        P("¶ 17","Es kommt nach meiner Einsicht, welche sich durch die Darstellung des Systems selbst rechtfertigen muß, alles darauf an, das Wahre nicht als Substanz, sondern ebensosehr als Subjekt aufzufassen und auszudrücken."),
+        P("¶ 20","Das Wahre ist das Ganze. Das Ganze aber ist nur das durch seine Entwicklung sich vollendende Wesen. Es ist von dem Absoluten zu sagen, daß es wesentlich Resultat, daß es erst am Ende das ist, was es in Wahrheit ist; und hierin eben besteht seine Natur, Wirkliches, Subjekt oder Sichselbstwerden zu sein.")]},
+      {id:"einl", title:"Einleitung", tr:{pt:"Introdução",en:"Introduction"}},
+      {id:"bew", title:"A. Bewußtsein", tr:{pt:"A. Consciência",en:"A. Consciousness"}},
+      {id:"sb", title:"B. Selbstbewußtsein", tr:{pt:"B. Consciência-de-si",en:"B. Self-consciousness"}}
+     ]},
+   { id:"rph", title:"Grundlinien der Philosophie des Rechts", tr:{pt:"Linhas fundamentais da Filosofia do Direito",en:"Elements of the Philosophy of Right"},
+     year:"1820", pub:"Berlin 1821 (datada 1820)", base:"1ª edição (grafia modernizada)", refsys:"TWA 7 / §",
+     about:{pt:"O prefácio cita-se por página; o corpo da obra, por parágrafo (§).",en:"The preface is cited by page; the body of the work by paragraph (§)."},
+     secs:[
+      {id:"vorr", title:"Vorrede", tr:{pt:"Prefácio",en:"Preface"}, paras:[
+        P("TWA 7, 24","Was vernünftig ist, das ist wirklich; und was wirklich ist, das ist vernünftig."),
+        P("TWA 7, 28","Wenn die Philosophie ihr Grau in Grau malt, dann ist eine Gestalt des Lebens alt geworden, und mit Grau in Grau läßt sie sich nicht verjüngen, sondern nur erkennen; die Eule der Minerva beginnt erst mit der einbrechenden Dämmerung ihren Flug.")]},
+      {id:"einl", title:"Einleitung (§§ 1–33)", tr:{pt:"Introdução (§§ 1–33)",en:"Introduction (§§ 1–33)"}},
+      {id:"abs", title:"Erster Teil. Das abstrakte Recht", tr:{pt:"Primeira parte. O direito abstrato",en:"Part One. Abstract Right"}}
+     ]}
+ ]},
+ { id:"marx", period:"xix", name:"Karl Marx", life:"1818–1883", lang:"de", works:[
+   { id:"thesen", title:"Thesen über Feuerbach", tr:{pt:"Teses sobre Feuerbach",en:"Theses on Feuerbach"},
+     year:"1845", pub:"1888 (versão de Engels)", base:"Manuscrito de Marx (grafia modernizada)", refsys:"Tese / MEW 3",
+     about:{pt:"Notas de 1845, publicadas por Engels em 1888. O protótipo mostra três das onze teses.",en:"Notes from 1845, published by Engels in 1888. The prototype shows three of the eleven theses."},
+     secs:[
+      {id:"text", title:"Ad Feuerbach", tr:{pt:"Ad Feuerbach",en:"Ad Feuerbach"}, paras:[
+        P("I","Der Hauptmangel alles bisherigen Materialismus (den Feuerbachschen mit eingerechnet) ist, daß der Gegenstand, die Wirklichkeit, Sinnlichkeit nur unter der Form des Objekts oder der Anschauung gefaßt wird; nicht aber als sinnlich menschliche Tätigkeit, Praxis; nicht subjektiv. Daher die tätige Seite abstrakt im Gegensatz zu dem Materialismus von dem Idealismus – der natürlich die wirkliche, sinnliche Tätigkeit als solche nicht kennt – entwickelt."),
+        P("II","Die Frage, ob dem menschlichen Denken gegenständliche Wahrheit zukomme – ist keine Frage der Theorie, sondern eine praktische Frage. In der Praxis muß der Mensch die Wahrheit, i.e. die Wirklichkeit und Macht, Diesseitigkeit seines Denkens beweisen. Der Streit über die Wirklichkeit oder Nichtwirklichkeit des Denkens – das von der Praxis isoliert ist – ist eine rein scholastische Frage."),
+        P("XI","Die Philosophen haben die Welt nur verschieden interpretiert; es kommt aber drauf an, sie zu verändern.")]}
+     ]},
+   { id:"brumaire", title:"Der achtzehnte Brumaire des Louis Bonaparte", tr:{pt:"O 18 de brumário de Luís Bonaparte",en:"The Eighteenth Brumaire of Louis Bonaparte"},
+     year:"1852", pub:"Die Revolution, New York 1852", base:"2ª edição, Hamburg 1869 (grafia modernizada)", refsys:"MEW 8",
+     about:{pt:"Escrito entre dezembro de 1851 e março de 1852, logo após o golpe de Luís Bonaparte.",en:"Written between December 1851 and March 1852, right after Louis Bonaparte's coup."},
+     secs:[
+      {id:"i", title:"I", tr:{pt:"Capítulo I",en:"Chapter I"}, paras:[
+        P("MEW 8, 115","Hegel bemerkte irgendwo, daß alle großen weltgeschichtlichen Tatsachen und Personen sich sozusagen zweimal ereignen. Er hat vergessen, hinzuzufügen: das eine Mal als Tragödie, das andere Mal als Farce."),
+        P("MEW 8, 115","Die Menschen machen ihre eigene Geschichte, aber sie machen sie nicht aus freien Stücken, nicht unter selbstgewählten, sondern unter unmittelbar vorhandenen, gegebenen und überlieferten Umständen. Die Tradition aller toten Geschlechter lastet wie ein Alp auf dem Gehirne der Lebenden.")]},
+      {id:"ii", title:"II", tr:{pt:"Capítulo II",en:"Chapter II"}},
+      {id:"vii", title:"VII", tr:{pt:"Capítulo VII",en:"Chapter VII"}}
+     ]},
+   { id:"kapital", title:"Das Kapital. Kritik der politischen Oekonomie. Erster Band", tr:{pt:"O Capital. Crítica da economia política. Livro I",en:"Capital. A Critique of Political Economy. Volume I"},
+     year:"1867", pub:"Hamburg: Otto Meissner, 1867", base:"1ª edição, grafia original", refsys:"S. (1867)",
+     about:{pt:"Aqui na grafia original de 1867 (Reichthum, Waare), para mostrar como a busca lida com ortografia antiga.",en:"Shown in the original 1867 spelling (Reichthum, Waare) to show how search handles old orthography."},
+     secs:[
+      {id:"k1", title:"Erstes Kapitel. Waare und Geld", tr:{pt:"Capítulo 1. Mercadoria e dinheiro",en:"Chapter 1. Commodity and Money"}, paras:[
+        P("S. 1","Der Reichthum der Gesellschaften, in welchen kapitalistische Produktionsweise herrscht, erscheint als eine „ungeheure Waarensammlung“, die einzelne Waare als seine Elementarform. Unsere Untersuchung beginnt daher mit der Analyse der Waare."),
+        P("S. 1","Die Waare ist zunächst ein äusserer Gegenstand, ein Ding, das durch seine Eigenschaften menschliche Bedürfnisse irgend einer Art befriedigt. Die Natur dieser Bedürfnisse, ob sie z. B. dem Magen oder der Phantasie entspringen, ändert nichts an der Sache.")]},
+      {id:"k2", title:"Zweites Kapitel. Die Verwandlung von Geld in Kapital", tr:{pt:"Capítulo 2. A transformação do dinheiro em capital",en:"Chapter 2. The Transformation of Money into Capital"}},
+      {id:"k3", title:"Drittes Kapitel. Die Produktion des absoluten Mehrwerths", tr:{pt:"Capítulo 3. A produção da mais-valia absoluta",en:"Chapter 3. The Production of Absolute Surplus-Value"}}
+     ]}
+ ]}
+];
+
+/* ---------- bibliographic data ---------- */
+const SITE = "Aletheia Project";
+const BASE_URL = "https://aletheiaproject.example/";   // provisório: trocar pelo domínio registrado
+const NAMES = {
+  aristoteles:{abnt:"ARISTÓTELES", ptLast:"Aristóteles", apa:"Aristotle", enLast:"Aristotle", full:"Aristotle", inv:"Aristotle"},
+  agostinho:{abnt:"AGOSTINHO, Santo", ptLast:"Agostinho", apa:"Augustine", enLast:"Augustine", full:"Augustine of Hippo", inv:"Augustine"},
+  spinoza:{abnt:"SPINOZA, Baruch de", ptLast:"Spinoza", apa:"Spinoza, B. de", enLast:"Spinoza", full:"Baruch de Spinoza", inv:"Spinoza, Baruch de"},
+  kant:{abnt:"KANT, Immanuel", ptLast:"Kant", apa:"Kant, I.", enLast:"Kant", full:"Immanuel Kant", inv:"Kant, Immanuel"},
+  hegel:{abnt:"HEGEL, Georg Wilhelm Friedrich", ptLast:"Hegel", apa:"Hegel, G. W. F.", enLast:"Hegel", full:"G. W. F. Hegel", inv:"Hegel, Georg Wilhelm Friedrich"},
+  marx:{abnt:"MARX, Karl", ptLast:"Marx", apa:"Marx, K.", enLast:"Marx", full:"Karl Marx", inv:"Marx, Karl"}
+};
+/* orig = data original (ABNT/Chicago/MLA), origEn = forma APA; ed = edição-base usada no site */
+const BIB = {
+  "aristoteles.met":{orig:"c. 350 a.C.", origEn:"ca. 350 B.C.E.", title:"Metaphysica", ed:{place:"Berlin", pub:"G. Reimer", year:"1831", note:"Ed. I. Bekker"}},
+  "agostinho.conf":{orig:"c. 400", origEn:"ca. 400", title:"Confessiones"},
+  "spinoza.ethica":{orig:"1677", origEn:"1677", ed:{place:"Amsterdam", pub:"J. Rieuwertsz", year:"1677"}},
+  "kant.krv":{orig:"1787", origEn:"1787", ed:{place:"Riga", pub:"J. F. Hartknoch", year:"1787", note:"2. Aufl."}},
+  "kant.aufkl":{orig:"1784", origEn:"1784", ed:{place:"Berlin", pub:"Berlinische Monatsschrift", year:"1784"}},
+  "hegel.phg":{orig:"1807", origEn:"1807", ed:{place:"Bamberg; Würzburg", pub:"J. A. Goebhardt", year:"1807"}},
+  "hegel.rph":{orig:"1821", origEn:"1821", ed:{place:"Berlin", pub:"Nicolai", year:"1821"}},
+  "marx.thesen":{orig:"1888", origEn:"1888", ed:{place:"Stuttgart", pub:"J. H. W. Dietz", year:"1888"}},
+  "marx.brumaire":{orig:"1852", origEn:"1852", ed:{place:"Hamburg", pub:"O. Meissner", year:"1869", note:"2. Aufl."}},
+  "marx.kapital":{orig:"1867", origEn:"1867", ed:{place:"Hamburg", pub:"O. Meissner", year:"1867"}}
+};
+const STYLE_NAMES = {abnt:"ABNT", apa:"APA", chicago:"Chicago", mla:"MLA"};
+const MPT = ["jan.","fev.","mar.","abr.","maio","jun.","jul.","ago.","set.","out.","nov.","dez."];
+const MEN = ["Jan.","Feb.","Mar.","Apr.","May","June","July","Aug.","Sept.","Oct.","Nov.","Dec."];
+
+function citeParts(a,w,secId,locator,quote,style){
+  const n = NAMES[a.id], b = BIB[`${a.id}.${w.id}`] || {orig:w.year, origEn:w.year};
+  const title = b.title || w.title;
+  const url = `${BASE_URL}#${a.id}.${w.id}.${secId}`;
+  const d = new Date(), y = d.getFullYear();
+  const accPt = `${d.getDate()} ${MPT[d.getMonth()]} ${y}`, accEn = `${d.getDate()} ${MEN[d.getMonth()]} ${y}`;
+  const ed = b.ed;
+  const long = quote && quote.length > 240;
+  const I = s=>`<i>${esc(s)}</i>`;
+  let inText="", inTextH="", ref="", refH="", label="";
+  if(style==="abnt"){
+    label = "Referência";
+    const call = `(${n.ptLast}, ${b.orig}, ${locator})`;
+    if(quote){ inText = long ? `${quote} ${call}.` : `“${quote}” ${call}.`;
+      inTextH = long ? `<p style="margin-left:4cm;font-size:10pt;line-height:1">${esc(quote)} ${esc(call)}.</p>` : `<p>“${esc(quote)}” ${esc(call)}.</p>`; }
+    const edT = ed ? `${ed.note?ed.note+". ":""}${ed.place}: ${ed.pub}, ${ed.year}. ` : "";
+    ref = `${n.abnt}. ${title}. ${edT}In: ${SITE}. Disponível em: ${url}. Acesso em: ${accPt}.`;
+    refH = `${esc(n.abnt)}. <b>${esc(title)}</b>. ${esc(edT)}In: ${esc(SITE)}. Disponível em: ${esc(url)}. Acesso em: ${accPt}.`;
+  } else if(style==="apa"){
+    label = "Reference";
+    const call = `(${n.enLast}, ${b.origEn}/${y}, ${locator})`;
+    if(quote){ inText = long ? `${quote} ${call}` : `"${quote}" ${call}.`;
+      inTextH = long ? `<p style="margin-left:0.5in">${esc(quote)} ${esc(call)}</p>` : `<p>"${esc(quote)}" ${esc(call)}.</p>`; }
+    ref = `${n.apa} (${y}). ${title}. ${SITE}. ${url} (Original work published ${b.origEn})`;
+    refH = `${esc(n.apa)} (${y}). ${I(title)}. ${esc(SITE)}. ${esc(url)} (Original work published ${esc(b.origEn)})`;
+  } else if(style==="chicago"){
+    label = "Reference List";
+    const call = `(${n.enLast} ${b.origEn}, ${locator})`;
+    if(quote){ inText = long ? `${quote} ${call}` : `“${quote}” ${call}.`;
+      inTextH = long ? `<p style="margin-left:0.5in">${esc(quote)} ${esc(call)}</p>` : `<p>“${esc(quote)}” ${esc(call)}.</p>`; }
+    const pubT = ed ? ` ${ed.place}: ${ed.pub}.` : "";
+    ref = `${n.inv}. ${b.origEn}. ${title}.${pubT} ${SITE}. ${url}.`;
+    refH = `${esc(n.inv)}. ${esc(b.origEn)}. ${I(title)}.${esc(pubT)} ${esc(SITE)}. ${esc(url)}.`;
+  } else if(style==="mla"){
+    label = "Works Cited";
+    const call = `(${n.enLast} ${locator})`;
+    if(quote){ inText = long ? `${quote} ${call}` : `“${quote}” ${call}.`;
+      inTextH = long ? `<p style="margin-left:0.5in">${esc(quote)} ${esc(call)}</p>` : `<p>“${esc(quote)}” ${esc(call)}.</p>`; }
+    ref = `${n.inv}. ${title}. ${b.origEn}. ${SITE}, ${url}. Accessed ${accEn}.`;
+    refH = `${esc(n.inv)}. ${I(title)}. ${esc(b.origEn)}. ${I(SITE)}, ${esc(url)}. Accessed ${accEn}.`;
+  }
+  return {inText, inTextH, ref, refH:refH.startsWith("<p>")?refH:`<p>${refH}</p>`, label};
+}
+
+/* ---------- state ---------- */
+let L = "pt";
+try{ const s = localStorage.getItem("corpus-lang"); if(s==="en"||s==="pt") L = s; }catch(e){}
+let filterAuthor = "all";
+let CS = "abnt";
+try{ const c = localStorage.getItem("corpus-cite"); if(c) CS = c; }catch(e){}
+let tocOpen = false;
+const $ = s=>document.querySelector(s);
+const app = $("#app");
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const t = k=>UI[L][k];
+
+function findWork(aid,wid){
+  const a = DATA.find(x=>x.id===aid); if(!a) return null;
+  const w = a.works.find(x=>x.id===wid); return w ? {a,w} : null;
+}
+function firstSec(w){ return w.secs.find(s=>s.paras) || w.secs[0]; }
+
+/* ---------- home: periods ---------- */
+const authorsOf = pid=>DATA.filter(a=>a.period===pid);
+const worksCount = list=>list.reduce((n,a)=>n+a.works.length,0);
+function renderHome(){
+  app.innerHTML = `
+    <section class="intro">
+      <h1>${t("h1")}</h1>
+      <p>${t("lead")}</p>
+      <div class="stats">${t("stats")(DATA.length,worksCount(DATA))} · ${t("choose2")}</div>
+    </section>
+    <section class="howto">
+      ${t("how").map((h,i)=>`<div><span class="n">${i+1}</span><b>${h[0]}</b><p>${h[1]}</p></div>`).join("")}
+    </section>`;
+}
+
+/* ---------- cascading dropdowns ---------- */
+const sPer = $("#sel-per"), sAut = $("#sel-aut"), sObr = $("#sel-obr"), bGo = $("#go");
+const opt = (v,label,dis=false)=>`<option value="${v}"${dis?" disabled":""}>${esc(label)}</option>`;
+function fillPer(v){
+  sPer.innerHTML = opt("",t("pickPer")) + PERIODS.map(p=>{
+    const n = authorsOf(p.id).length;
+    return opt(p.id, n ? `${p.name[L]} (${p.span[L]})` : `${p.name[L]} — ${t("pending")}`, !n);
+  }).join("");
+  sPer.value = v||"";
+}
+function fillAut(v){
+  const as = sPer.value ? authorsOf(sPer.value) : [];
+  sAut.innerHTML = opt("",t("pickAut")) + as.map(a=>opt(a.id,`${a.name} (${a.life})`)).join("");
+  sAut.disabled = !as.length; sAut.value = v||"";
+}
+function fillObr(v){
+  const a = DATA.find(x=>x.id===sAut.value);
+  sObr.innerHTML = opt("",t("pickObr")) + (a?a.works.map(w=>opt(w.id,`${w.title} (${w.year})`)).join(""):"");
+  sObr.disabled = !a; sObr.value = v||"";
+  bGo.disabled = !sObr.value;
+}
+function syncPicker(per,aut,obr){ fillPer(per); fillAut(aut); fillObr(obr); }
+sPer.onchange = ()=>{ fillAut(""); fillObr(""); sAut.focus(); };
+sAut.onchange = ()=>{ fillObr(""); sObr.focus(); };
+sObr.onchange = ()=>{ bGo.disabled = !sObr.value; };
+bGo.onclick = ()=>{
+  const f = findWork(sAut.value,sObr.value); if(!f) return;
+  go(`${f.a.id}.${f.w.id}.${firstSec(f.w).id}`);
+};
+
+/* ---------- period page: authors ---------- */
+function renderPeriod(p){
+  const as = authorsOf(p.id);
+  app.innerHTML = `
+    <div class="crumbs"><a href="#">${t("library")}</a><span>›</span><span>${p.name[L]}</span></div>
+    <header class="phead">
+      <div class="span">${p.span[L]}</div>
+      <h1>${p.name[L]}</h1>
+      <p>${p.blurb[L]}</p>
+    </header>
+    <section class="agrid">
+      ${as.map(a=>`<a class="acard" href="#${a.id}">
+        <h2>${esc(a.name)}</h2>
+        <span class="life">${a.life} · ${UI[L].langs[a.lang]}</span>
+        <span class="ws" lang="${a.lang}">${a.works.map(w=>esc(w.title)).join(" · ")}</span>
+        <span class="foot">${t("worksN")(a.works.length)} →</span>
+      </a>`).join("")}
+    </section>`;
+  window.scrollTo(0,0);
+}
+
+/* ---------- author page: works ---------- */
+function renderAuthor(a){
+  const p = PERIODS.find(x=>x.id===a.period);
+  app.innerHTML = `
+    <div class="crumbs"><a href="#">${t("library")}</a><span>›</span><a href="#${p.id}">${p.name[L]}</a><span>›</span><span>${esc(a.name)}</span></div>
+    <header class="phead">
+      <div class="span">${a.life} · ${UI[L].langs[a.lang]}</div>
+      <h1>${esc(a.name)}</h1>
+      <p>${t("worksN")(a.works.length)}</p>
+    </header>
+    <ul class="works alist">
+      ${a.works.map(w=>`<li><a href="#${a.id}.${w.id}.${firstSec(w).id}">
+        <span class="yr">${w.year}</span>
+        <span><span class="ot" lang="${a.lang}">${esc(w.title)}</span><br><span class="tt">${esc(w.tr[L])}</span></span>
+      </a></li>`).join("")}
+    </ul>`;
+  window.scrollTo(0,0);
+}
+
+/* ---------- reader ---------- */
+function renderReader(aid,wid,sid,pid){
+  const f = findWork(aid,wid); if(!f) return renderHome();
+  const {a,w} = f;
+  const sec = w.secs.find(s=>s.id===sid) || firstSec(w);
+  const avail = w.secs.filter(s=>s.paras);
+  const i = avail.indexOf(sec);
+  const prev = i>0 ? avail[i-1] : null, next = i>=0 && i<avail.length-1 ? avail[i+1] : null;
+
+  const toc = `
+    <aside class="toc ${tocOpen?"":"closed"}" id="toc">
+      <button class="toc-toggle" id="tocbtn" aria-expanded="${tocOpen}"><span>${t("contents")}</span><span aria-hidden="true">${tocOpen?"−":"+"}</span></button>
+      <div class="toc-body">
+        <div class="crumb"><a href="#">${t("library")}</a> › <a href="#${a.period}">${PERIODS.find(x=>x.id===a.period).name[L]}</a></div>
+        <h3><a href="#${a.id}" style="text-decoration:none">${esc(a.name)}</a></h3>
+        <div class="life" style="font-family:var(--mono);font-size:14px;color:var(--ink-soft);margin-bottom:14px">${a.life}</div>
+        ${a.works.map(ww=>`
+          <div class="tocw">
+            <a href="#${a.id}.${ww.id}.${firstSec(ww).id}" class="${ww===w?"cur":""}" lang="${a.lang}">${esc(ww.title)}</a>
+            ${ww===w?`<ol>${ww.secs.map(s=>s.paras
+              ? `<li><a href="#${a.id}.${ww.id}.${s.id}" class="${s===sec?"cur":""}" lang="${a.lang}">${esc(s.title)}</a></li>`
+              : `<li><span lang="${a.lang}">${esc(s.title)} <small>· ${t("pending")}</small></span></li>`).join("")}</ol>`:""}
+          </div>`).join("")}
+      </div>
+    </aside>`;
+
+  const body = sec.paras
+    ? sec.paras.map((p,k)=>{
+        const id = `${a.id}.${w.id}.${sec.id}.p${k+1}`;
+        return `<div class="para ${pid===`p${k+1}`?"hit":""}" id="${id}">
+          <span class="ref">${esc(p.ref)}</span>
+          <p class="tx" lang="${a.lang}">${esc(p.t)}</p>
+          <button class="cite" data-a="${a.id}" data-w="${w.id}" data-s="${sec.id}" data-k="${k}" title="${t("cite")}" aria-label="${t("cite")}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          </button></div>`;}).join("")
+    : `<div class="pend">${t("pendBody")}</div>`;
+
+  app.innerHTML = `<div class="reader">${toc}
+    <article class="page">
+      <header class="whead">
+        <div class="who">${esc(a.name)}</div>
+        <h1 lang="${a.lang}">${esc(w.title)}</h1>
+        <div class="trans">${esc(w.tr[L])}</div>
+        <div class="meta">
+          <span><b>${t("published")}</b> ${esc(w.pub)}</span>
+          <span><b>${t("base")}</b> ${esc(w.base)}</span>
+          <span><b>${t("lang")}</b> ${UI[L].langs[a.lang]}</span>
+          <span><b>${t("refsys")}</b> ${esc(w.refsys)}</span>
+        </div>
+        <p class="about">${esc(w.about[L])}</p>
+        <div class="copyhint"><span id="copyhint" style="flex:1;min-width:0"></span>
+          <button class="refbtn" id="refbtn" data-a="${a.id}" data-w="${w.id}" data-s="${sec.id}"></button></div>
+      </header>
+      <h2 class="sec-title" lang="${a.lang}">${esc(sec.title)}</h2>
+      <p class="sec-sub">${esc(sec.tr[L])}</p>
+      ${body}
+      <nav class="pager">
+        ${prev?`<a href="#${a.id}.${w.id}.${prev.id}"><small>← ${t("prev")}</small><span lang="${a.lang}">${esc(prev.title)}</span></a>`:"<span></span>"}
+        ${next?`<a href="#${a.id}.${w.id}.${next.id}" style="text-align:right"><small>${t("next")} →</small><span lang="${a.lang}">${esc(next.title)}</span></a>`:"<span></span>"}
+      </nav>
+      <p class="note">${t("note")}</p>
+    </article></div>`;
+
+  updateHint();
+  $("#tocbtn").onclick = ()=>{ tocOpen=!tocOpen; route(); };
+  if(pid){ const el = document.getElementById(`${a.id}.${w.id}.${sec.id}.${pid}`); if(el) requestAnimationFrame(()=>el.scrollIntoView({block:"center"})); }
+  else window.scrollTo(0,0);
+}
+
+function cite(a,w,p){
+  const last = a.name.split(" ").pop();
+  return `${last}, ${w.title}, ${p.ref}.`;
+}
+
+/* ---------- search ---------- */
+function norm(s){
+  return s.toLowerCase().replace(/ß/g,"ss").normalize("NFD").replace(/[̀-ͯ]/g,"")
+    .replace(/th/g,"t").replace(/aa/g,"a").replace(/ey/g,"ei").replace(/[^\p{L}\p{N}\s]/gu," ");
+}
+function highlight(text,terms){
+  return text.split(/(\s+)/).map(tok=>{
+    if(/^\s+$/.test(tok)) return tok;
+    const n = norm(tok);
+    return terms.some(q=>n.includes(q)) ? `<mark>${esc(tok)}</mark>` : esc(tok);
+  }).join("");
+}
+function renderSearch(){
+  const raw = $("#q").value.trim();
+  const terms = norm(raw).split(/\s+/).filter(x=>x.length>1);
+  const hits = [];
+  if(terms.length) DATA.forEach(a=>{
+    if(filterAuthor!=="all" && filterAuthor!==a.id) return;
+    a.works.forEach(w=>w.secs.forEach(s=>(s.paras||[]).forEach((p,k)=>{
+      const n = norm(p.t);
+      if(terms.every(q=>n.includes(q))) hits.push({a,w,s,p,k});
+    })));
+  });
+  const samples = ["Theil","Vernunft","Ware","Geschichte","substantia"];
+  app.innerHTML = `<section class="sres">
+    <h1>${t("sres")}${raw?` · <i style="font-style:italic">${esc(raw)}</i>`:""}</h1>
+    <p class="hint">${t("hintS")}</p>
+    <div class="chips" role="group">
+      <button class="chip" data-f="all" aria-pressed="${filterAuthor==="all"}">${t("all")}</button>
+      ${DATA.map(a=>`<button class="chip" data-f="${a.id}" aria-pressed="${filterAuthor===a.id}">${esc(a.name.split(" ").pop())}</button>`).join("")}
+    </div>
+    ${terms.length
+      ? `<div class="hint" style="font-family:var(--mono);font-size:12px">${t("found")(hits.length)}</div>
+         ${hits.length? hits.map(h=>`<a class="res" href="#${h.a.id}.${h.w.id}.${h.s.id}.p${h.k+1}">
+            <div class="where">${esc(h.a.name.split(" ").pop())} · <span lang="${h.a.lang}" style="text-transform:none;font-style:italic">${esc(h.w.title)}</span> · <b>${esc(h.p.ref)}</b></div>
+            <div class="snip" lang="${h.a.lang}">${highlight(h.p.t,terms)}</div></a>`).join("") : `<p>${t("none")}</p>`}`
+      : `<div class="try">${t("tryit")} ${samples.map(s=>`<button data-try="${s}">${s}</button>`).join("")}</div>`}
+  </section>`;
+  app.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{filterAuthor=b.dataset.f;renderSearch();});
+  app.querySelectorAll("[data-try]").forEach(b=>b.onclick=()=>{$("#q").value=b.dataset.try;go("busca");});
+}
+
+/* ---------- routing ---------- */
+function go(h){ if(location.hash.slice(1)===h) route(); else location.hash = h; }
+function route(){
+  const h = decodeURIComponent(location.hash.slice(1));
+  if(h==="busca"){ renderSearch(); return; }
+  const parts = h.split(".");
+  const au = DATA.find(a=>a.id===parts[0]);
+  if(parts.length>=2 && au){ syncPicker(au.period,au.id,parts[1]); return renderReader(parts[0],parts[1],parts[2],parts[3]); }
+  const per = PERIODS.find(p=>p.id===h);
+  if(per && authorsOf(per.id).length){ syncPicker(per.id,"",""); return renderPeriod(per); }
+  if(au){ syncPicker(au.period,au.id,""); return renderAuthor(au); }
+  syncPicker("","",""); renderHome(); window.scrollTo(0,0);
+}
+function applyLang(){
+  document.documentElement.lang = L==="pt"?"pt-BR":"en";
+  $("#q").placeholder = t("search");
+  $("#lb-per").textContent = t("lPer"); $("#lb-aut").textContent = t("lAut"); $("#lb-obr").textContent = t("lObr");
+  bGo.textContent = t("read") + " →";
+  $("#lb-cit").textContent = t("citLbl");
+  themeLabel();
+  sCit.querySelector('[value="plain"]').textContent = t("plain");
+  updateHint();
+  $("#lang-pt").setAttribute("aria-pressed",L==="pt");
+  $("#lang-en").setAttribute("aria-pressed",L==="en");
+}
+document.querySelectorAll(".lang button").forEach(b=>b.onclick=()=>{
+  L=b.dataset.l; try{localStorage.setItem("corpus-lang",L);}catch(e){}
+  applyLang(); route();
+});
+let qTimer;
+$("#q").addEventListener("input",()=>{ clearTimeout(qTimer); qTimer=setTimeout(()=>go("busca"),180); });
+$("#q").addEventListener("keydown",e=>{ if(e.key==="Enter") go("busca"); });
+
+let toastTimer;
+function toast(msg){ const el=$("#toast"); el.textContent=msg; el.hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.hidden=true,2600); }
+function updateHint(){
+  const h = document.getElementById("copyhint"); if(!h) return;
+  h.innerHTML = CS==="plain" ? t("hintPlain") : t("hint")(STYLE_NAMES[CS]);
+  const rb = document.getElementById("refbtn");
+  if(rb) rb.textContent = `${t("refBtn")} (${STYLE_NAMES[CS==="plain"?"abnt":CS]})`;
+}
+function writeClip(plain,html,okMsg){
+  try{
+    if(window.ClipboardItem && navigator.clipboard && navigator.clipboard.write){
+      navigator.clipboard.write([new ClipboardItem({"text/plain":new Blob([plain],{type:"text/plain"}),"text/html":new Blob([html],{type:"text/html"})})])
+        .then(()=>toast(okMsg),()=>fallbackText(plain,okMsg));
+    } else fallbackText(plain,okMsg);
+  }catch(err){ fallbackText(plain,okMsg); }
+}
+function fallbackText(plain,okMsg){
+  try{ navigator.clipboard.writeText(plain).then(()=>toast(okMsg),()=>toast(`${t("copyFail")}\n${plain}`)); }
+  catch(err){ toast(`${t("copyFail")}\n${plain}`); }
+}
+/* botão: copia só a referência do parágrafo */
+app.addEventListener("click",e=>{
+  const rb = e.target.closest("#refbtn");
+  if(rb){
+    const f = findWork(rb.dataset.a,rb.dataset.w); if(!f) return;
+    const st = CS==="plain" ? "abnt" : CS;
+    const c = citeParts(f.a,f.w,rb.dataset.s,"","",st);
+    writeClip(c.ref, c.refH, `${t("copied")} (${STYLE_NAMES[st]})`);
+    return;
+  }
+  const b = e.target.closest(".cite"); if(!b) return;
+  const f = findWork(b.dataset.a,b.dataset.w); if(!f) return;
+  const sec = f.w.secs.find(s=>s.id===b.dataset.s); const p = sec.paras[+b.dataset.k];
+  const st = CS==="plain" ? "abnt" : CS;
+  const c = citeParts(f.a,f.w,sec.id,p.ref,"",st);
+  writeClip(c.ref, c.refH, `${t("copied")} (${STYLE_NAMES[st]})`);
+});
+/* Ctrl+C: trecho selecionado sai como citação */
+document.addEventListener("copy",e=>{
+  if(CS==="plain") return;
+  const sel = window.getSelection(); if(!sel || sel.isCollapsed || !sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  const node = n=> n && (n.nodeType===1 ? n : n.parentElement);
+  const p1 = node(range.startContainer)?.closest(".para"), p2 = node(range.endContainer)?.closest(".para");
+  if(!p1 || !p2) return;
+  const [aid,wid,sid] = p1.id.split(".");
+  const f = findWork(aid,wid); if(!f) return;
+  const frag = range.cloneContents();
+  frag.querySelectorAll(".ref,.cite").forEach(x=>x.remove());
+  const quote = frag.textContent.replace(/\s+/g," ").trim(); if(!quote) return;
+  const r1 = p1.querySelector(".ref").textContent, r2 = p2.querySelector(".ref").textContent;
+  const loc = r1===r2 ? r1 : `${r1}–${r2}`;
+  const c = citeParts(f.a,f.w,sid,loc,quote,CS);
+  e.clipboardData.setData("text/plain", c.inText);
+  e.clipboardData.setData("text/html", c.inTextH);
+  e.preventDefault();
+  toast(t("copiedQ")(STYLE_NAMES[CS]));
+});
+/* tema claro/escuro: segue o sistema até o leitor escolher */
+const root = document.documentElement, tBtn = $("#themebtn");
+const isDark = ()=> root.dataset.theme ? root.dataset.theme==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+try{ const th = localStorage.getItem("corpus-theme"); if(th==="dark"||th==="light") root.dataset.theme = th; }catch(e){}
+function themeLabel(){ const l = isDark() ? t("themeToLight") : t("themeToDark"); tBtn.title = l; tBtn.setAttribute("aria-label",l); }
+tBtn.onclick = ()=>{
+  root.dataset.theme = isDark() ? "light" : "dark";
+  try{ localStorage.setItem("corpus-theme",root.dataset.theme); }catch(e){}
+  themeLabel();
+};
+try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",themeLabel); }catch(e){}
+const sCit = $("#sel-cit");
+sCit.value = CS;
+sCit.onchange = ()=>{ CS = sCit.value; try{localStorage.setItem("corpus-cite",CS);}catch(e){} updateHint(); };
+window.addEventListener("hashchange",route);
+applyLang(); route();
+</script>
+
+</body>
+</html>
