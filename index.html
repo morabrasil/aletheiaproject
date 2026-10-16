@@ -192,6 +192,19 @@ a.era:hover{background:var(--accent-tint)}
 .meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:13px;color:var(--ink-soft)}
 .meta b{font-weight:600;color:var(--ink)}
 .about{margin-top:14px;font-size:14px;color:var(--ink-soft);max-width:62ch}
+.wmini{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:26px}
+.wmini summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:9px 0;font-size:13px;color:var(--ink-soft)}
+.wmini summary::-webkit-details-marker{display:none}
+.wm-who{font-family:var(--chrome);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.wm-sep{opacity:.5}
+.wm-t{font-family:var(--display);font-style:italic;font-size:16px;color:var(--ink)}
+.wm-tr{font-size:13px}
+.wm-more{margin-left:auto;font-family:var(--chrome);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:6px}
+.wm-more::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .15s}
+.wmini[open] .wm-more::after{transform:rotate(-135deg) translateY(-2px)}
+.wmini summary:hover .wm-t{color:var(--accent)}
+.wmini-body{padding:6px 0 18px}
+.wmini-body .meta{margin-top:0}
 .sec-title{font-family:var(--display);font-weight:500;font-size:21px;margin:0 0 4px}
 .sec-sub{font-size:13px;color:var(--ink-soft);margin:0 0 24px}
 
@@ -371,7 +384,7 @@ const UI = {
     citLbl:"Citar", plain:"Texto simples", cite:"Copiar referência",
     hint:(st)=>`Selecione um trecho e copie (<kbd>Ctrl</kbd>+<kbd>C</kbd>): ele sai entre aspas com a chamada em <b>${st}</b>, como “…” (Autor, ano, local). Troque a norma no topo da página.`,
     refBtn:"Copiar referência", refTitle:"Como citar esta obra",
-    inCollection:"No acervo", expand:"Expandir", collapse:"Recolher", expandAll:"Expandir tudo", collapseAll:"Recolher tudo", approxPg:"Posição aproximada da quebra de página", mixTxt:n=>`${n} ${n===1?"obra completa":"obras completas"} no original, demais em trechos`, completeTxt:"obra completa no original", partialTxt:"trechos selecionados neste protótipo",
+    inCollection:"No acervo", aboutCite:"Sobre a obra e como citar", expand:"Expandir", collapse:"Recolher", expandAll:"Expandir tudo", collapseAll:"Recolher tudo", approxPg:"Posição aproximada da quebra de página", mixTxt:n=>`${n} ${n===1?"obra completa":"obras completas"} no original, demais em trechos`, completeTxt:"obra completa no original", partialTxt:"trechos selecionados neste protótipo",
     excerpt:"trecho", partsN:(n,k)=>`${n} ${k==="b"?"livros":k==="l"?"cartas":"partes"}`,
     loadingWork:"Carregando o texto…", loadFail:"Não foi possível carregar o texto. Recarregue a página para tentar de novo.",
     loadingAll:"Carregando o acervo para a busca…",
@@ -409,7 +422,7 @@ const UI = {
     citLbl:"Cite", plain:"Plain text", cite:"Copy reference",
     hint:(st)=>`Select a passage and copy it (<kbd>Ctrl</kbd>+<kbd>C</kbd>): it is pasted in quotation marks with a <b>${st}</b> in-text citation, like “…” (Author, year, locator). Change the style at the top of the page.`,
     refBtn:"Copy reference", refTitle:"How to cite this work",
-    inCollection:"In the collection", expand:"Expand", collapse:"Collapse", expandAll:"Expand all", collapseAll:"Collapse all", approxPg:"Approximate position of the page break", mixTxt:n=>`${n} complete ${n===1?"work":"works"} in the original, others as excerpts`, completeTxt:"complete works in the original", partialTxt:"selected excerpts in this prototype",
+    inCollection:"In the collection", aboutCite:"About this work and how to cite", expand:"Expand", collapse:"Collapse", expandAll:"Expand all", collapseAll:"Collapse all", approxPg:"Approximate position of the page break", mixTxt:n=>`${n} complete ${n===1?"work":"works"} in the original, others as excerpts`, completeTxt:"complete works in the original", partialTxt:"selected excerpts in this prototype",
     excerpt:"excerpt", partsN:(n,k)=>`${n} ${k==="b"?"books":k==="l"?"letters":"parts"}`,
     loadingWork:"Loading the text…", loadFail:"Couldn't load the text. Reload the page to try again.",
     loadingAll:"Loading the collection for search…",
@@ -1000,13 +1013,11 @@ function renderReader(aid,wid,sid,pid){
           </button></div>`;}).join("")
     : `<div class="pend">${t("pendBody")}</div>`;
 
-  app.innerHTML = `<div class="reader">${toc}
-    <article class="page">
-      <header class="whead">
-        <div class="who">${esc(aName(a))}</div>
+  const isFirst = avail.indexOf(sec) <= 0;
+  const headTop = `<div class="who">${esc(aName(a))}</div>
         <h1 lang="${a.lang}">${esc(w.title)}</h1>
-        <div class="trans">${esc(w.tr[L])}</div>
-        <div class="meta">
+        <div class="trans">${esc(w.tr[L])}</div>`;
+  const headInfo = `<div class="meta">
           <span><b>${t("published")}</b> ${esc(loc(w.pub))}</span>
           <span><b>${t("base")}</b> ${esc(loc(w.base))}</span>
           <span><b>${t("lang")}</b> ${UI[L].langs[a.lang]}</span>
@@ -1018,8 +1029,14 @@ function renderReader(aid,wid,sid,pid){
             <button class="refbtn" id="refbtn" data-a="${a.id}" data-w="${w.id}" data-s="${sec.id}"></button></div>
           <div class="reftext" id="reftext" data-a="${a.id}" data-w="${w.id}" data-s="${sec.id}"></div>
           <p class="refhint" id="copyhint"></p>
-        </section>
-      </header>
+        </section>`;
+  app.innerHTML = `<div class="reader">${toc}
+    <article class="page">
+      ${isFirst ? `<header class="whead">${headTop}${headInfo}</header>` : `
+      <details class="wmini">
+        <summary><span class="wm-who">${esc(aName(a))}</span><span class="wm-sep">·</span><span class="wm-t" lang="${a.lang}">${esc(w.title)}</span><span class="wm-tr">${esc(w.tr[L])}</span><span class="wm-more">${t("aboutCite")}</span></summary>
+        <div class="wmini-body">${headInfo}</div>
+      </details>`}
       <h2 class="sec-title" lang="${a.lang}">${esc(sec.title)}</h2>
       ${sec.tr?`<p class="sec-sub">${esc(sec.tr[L])}</p>`:`<p class="sec-sub"></p>`}
       ${body}
