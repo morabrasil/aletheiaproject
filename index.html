@@ -381,9 +381,9 @@ const PERIODS = [
   blurb:{pt:"A maior parte ainda está protegida por direito autoral e entra no acervo ano a ano.",en:"Most of it is still under copyright and joins the collection year by year."}}
 ];
 const DATA = [
- { id:"aristoteles", period:"antiga", name:"Aristóteles", life:"384–322 a.C.", lang:"grc", works:[
+ { id:"aristoteles", period:"antiga", name:{pt:"Aristóteles",en:"Aristotle"}, short:{pt:"Aristóteles",en:"Aristotle"}, life:{pt:"384–322 a.C.",en:"384–322 BC"}, lang:"grc", works:[
    { id:"met", title:"Τὰ μετὰ τὰ φυσικά", tr:{pt:"Metafísica",en:"Metaphysics"},
-     year:"séc. IV a.C.", pub:"Ed. Bekker, Berlin 1831", base:"Aristotelis Opera, ed. I. Bekker", refsys:"Bekker",
+     year:{pt:"séc. IV a.C.",en:"4th c. BC"}, pub:{pt:"Ed. Bekker, Berlim 1831",en:"Bekker ed., Berlin 1831"}, base:"Aristotelis Opera, ed. I. Bekker", refsys:"Bekker",
      about:{pt:"Cita-se pela paginação de Bekker: página, coluna (a/b) e linha.",en:"Cited by Bekker pagination: page, column (a/b) and line."},
      secs:[
       {id:"a", title:"Α (I)", tr:{pt:"Livro I (Alfa)",en:"Book I (Alpha)"}, paras:[
@@ -394,9 +394,9 @@ const DATA = [
       {id:"l", title:"Λ (XII)", tr:{pt:"Livro XII (Lambda)",en:"Book XII (Lambda)"}}
      ]}
  ]},
- { id:"agostinho", period:"medieval", name:"Agostinho de Hipona", life:"354–430", lang:"la", works:[
+ { id:"agostinho", period:"medieval", name:{pt:"Agostinho de Hipona",en:"Augustine of Hippo"}, short:{pt:"Agostinho",en:"Augustine"}, life:"354–430", lang:"la", works:[
    { id:"conf", title:"Confessiones", tr:{pt:"Confissões",en:"Confessions"},
-     year:"c. 397–400", pub:"c. 400", base:"Tradição manuscrita, texto latino corrente", refsys:"Livro, capítulo, parágrafo",
+     year:"c. 397–400", pub:"c. 400", base:{pt:"Tradição manuscrita, texto latino corrente",en:"Manuscript tradition, standard Latin text"}, refsys:{pt:"Livro, capítulo, parágrafo",en:"Book, chapter, paragraph"},
      about:{pt:"Treze livros; cita-se por livro, capítulo e parágrafo.",en:"Thirteen books; cited by book, chapter and paragraph."},
      secs:[
       {id:"l1", title:"Liber primus", tr:{pt:"Livro I",en:"Book I"}, paras:[
@@ -421,7 +421,7 @@ const DATA = [
  ]},
  { id:"kant", period:"moderna", name:"Immanuel Kant", life:"1724–1804", lang:"de", works:[
    { id:"krv", title:"Kritik der reinen Vernunft", tr:{pt:"Crítica da razão pura",en:"Critique of Pure Reason"},
-     year:"1781/87", pub:"A 1781 · B 1787", base:"Akademie-Ausgabe, Bd. III–IV (grafia modernizada)", refsys:"A / B",
+     year:"1781/87", pub:"A 1781 · B 1787", base:{pt:"Akademie-Ausgabe, Bd. III–IV (grafia modernizada)",en:"Akademie-Ausgabe, vols. III–IV (modernized spelling)"}, refsys:"A / B",
      about:{pt:"Cita-se pelas páginas da 1ª (A) e da 2ª edição (B), marcadas na margem.",en:"Cited by the pages of the 1st (A) and 2nd (B) editions, shown in the margin."},
      secs:[
       {id:"vorr", title:"Vorrede zur zweiten Auflage", tr:{pt:"Prefácio à 2ª edição",en:"Preface to the 2nd edition"}},
@@ -432,7 +432,7 @@ const DATA = [
       {id:"logik", title:"Transzendentale Logik", tr:{pt:"Lógica transcendental",en:"Transcendental Logic"}}
      ]},
    { id:"aufkl", title:"Beantwortung der Frage: Was ist Aufklärung?", tr:{pt:"Resposta à pergunta: Que é Esclarecimento?",en:"An Answer to the Question: What Is Enlightenment?"},
-     year:"1784", pub:"Berlinische Monatsschrift, Dez. 1784", base:"Akademie-Ausgabe, Bd. VIII (grafia modernizada)", refsys:"AA",
+     year:"1784", pub:"Berlinische Monatsschrift, Dez. 1784", base:{pt:"Akademie-Ausgabe, Bd. VIII (grafia modernizada)",en:"Akademie-Ausgabe, vol. VIII (modernized spelling)"}, refsys:"AA",
      about:{pt:"Ensaio curto; cita-se pelo volume e página da Akademie-Ausgabe.",en:"Short essay; cited by Akademie-Ausgabe volume and page."},
      secs:[
       {id:"text", title:"Text", tr:{pt:"Texto",en:"Text"}, paras:[
@@ -442,7 +442,7 @@ const DATA = [
  ]},
  { id:"hegel", period:"xix", name:"Georg Wilhelm Friedrich Hegel", life:"1770–1831", lang:"de", works:[
    { id:"phg", title:"Phänomenologie des Geistes", tr:{pt:"Fenomenologia do Espírito",en:"Phenomenology of Spirit"},
-     year:"1807", pub:"Bamberg/Würzburg 1807", base:"1ª edição (grafia modernizada)", refsys:"¶",
+     year:"1807", pub:"Bamberg/Würzburg 1807", base:{pt:"1ª edição (grafia modernizada)",en:"1st edition (modernized spelling)"}, refsys:"¶",
      about:{pt:"Cita-se aqui pela numeração de parágrafos (¶) usada na literatura secundária.",en:"Cited here by the paragraph numbering (¶) used in the secondary literature."},
      secs:[
       {id:"vorr", title:"Vorrede", tr:{pt:"Prefácio",en:"Preface"}, paras:[
@@ -454,7 +454,7 @@ const DATA = [
       {id:"sb", title:"B. Selbstbewußtsein", tr:{pt:"B. Consciência-de-si",en:"B. Self-consciousness"}}
      ]},
    { id:"rph", title:"Grundlinien der Philosophie des Rechts", tr:{pt:"Linhas fundamentais da Filosofia do Direito",en:"Elements of the Philosophy of Right"},
-     year:"1820", pub:"Berlin 1821 (datada 1820)", base:"1ª edição (grafia modernizada)", refsys:"TWA 7 / §",
+     year:"1820", pub:{pt:"Berlim 1821 (datada de 1820)",en:"Berlin 1821 (dated 1820)"}, base:{pt:"1ª edição (grafia modernizada)",en:"1st edition (modernized spelling)"}, refsys:"TWA 7 / §",
      about:{pt:"O prefácio cita-se por página; o corpo da obra, por parágrafo (§).",en:"The preface is cited by page; the body of the work by paragraph (§)."},
      secs:[
       {id:"vorr", title:"Vorrede", tr:{pt:"Prefácio",en:"Preface"}, paras:[
@@ -466,7 +466,7 @@ const DATA = [
  ]},
  { id:"marx", period:"xix", name:"Karl Marx", life:"1818–1883", lang:"de", works:[
    { id:"thesen", title:"Thesen über Feuerbach", tr:{pt:"Teses sobre Feuerbach",en:"Theses on Feuerbach"},
-     year:"1845", pub:"1888 (versão de Engels)", base:"Manuscrito de Marx (grafia modernizada)", refsys:"Tese / MEW 3",
+     year:"1845", pub:{pt:"1888 (versão de Engels)",en:"1888 (Engels' version)"}, base:{pt:"Manuscrito de Marx (grafia modernizada)",en:"Marx's manuscript (modernized spelling)"}, refsys:{pt:"Tese / MEW 3",en:"Thesis / MEW 3"},
      about:{pt:"Notas de 1845, publicadas por Engels em 1888. O protótipo mostra três das onze teses.",en:"Notes from 1845, published by Engels in 1888. The prototype shows three of the eleven theses."},
      secs:[
       {id:"text", title:"Ad Feuerbach", tr:{pt:"Ad Feuerbach",en:"Ad Feuerbach"}, paras:[
@@ -475,7 +475,7 @@ const DATA = [
         P("XI","Die Philosophen haben die Welt nur verschieden interpretiert; es kommt aber drauf an, sie zu verändern.")]}
      ]},
    { id:"brumaire", title:"Der achtzehnte Brumaire des Louis Bonaparte", tr:{pt:"O 18 de brumário de Luís Bonaparte",en:"The Eighteenth Brumaire of Louis Bonaparte"},
-     year:"1852", pub:"Die Revolution, New York 1852", base:"2ª edição, Hamburg 1869 (grafia modernizada)", refsys:"MEW 8",
+     year:"1852", pub:"Die Revolution, New York 1852", base:{pt:"2ª edição, Hamburgo 1869 (grafia modernizada)",en:"2nd edition, Hamburg 1869 (modernized spelling)"}, refsys:"MEW 8",
      about:{pt:"Escrito entre dezembro de 1851 e março de 1852, logo após o golpe de Luís Bonaparte.",en:"Written between December 1851 and March 1852, right after Louis Bonaparte's coup."},
      secs:[
       {id:"i", title:"I", tr:{pt:"Capítulo I",en:"Chapter I"}, paras:[
@@ -485,7 +485,7 @@ const DATA = [
       {id:"vii", title:"VII", tr:{pt:"Capítulo VII",en:"Chapter VII"}}
      ]},
    { id:"kapital", title:"Das Kapital. Kritik der politischen Oekonomie. Erster Band", tr:{pt:"O Capital. Crítica da economia política. Livro I",en:"Capital. A Critique of Political Economy. Volume I"},
-     year:"1867", pub:"Hamburg: Otto Meissner, 1867", base:"1ª edição, grafia original", refsys:"S. (1867)",
+     year:"1867", pub:"Hamburg: Otto Meissner, 1867", base:{pt:"1ª edição, grafia original",en:"1st edition, original spelling"}, refsys:"S. (1867)",
      about:{pt:"Aqui na grafia original de 1867 (Reichthum, Waare), para mostrar como a busca lida com ortografia antiga.",en:"Shown in the original 1867 spelling (Reichthum, Waare) to show how search handles old orthography."},
      secs:[
       {id:"k1", title:"Erstes Kapitel. Waare und Geld", tr:{pt:"Capítulo 1. Mercadoria e dinheiro",en:"Chapter 1. Commodity and Money"}, paras:[
@@ -526,7 +526,7 @@ const MPT = ["jan.","fev.","mar.","abr.","maio","jun.","jul.","ago.","set.","out
 const MEN = ["Jan.","Feb.","Mar.","Apr.","May","June","July","Aug.","Sept.","Oct.","Nov.","Dec."];
 
 function citeParts(a,w,secId,locator,quote,style){
-  const n = NAMES[a.id], b = BIB[`${a.id}.${w.id}`] || {orig:w.year, origEn:w.year};
+  const n = NAMES[a.id], b = BIB[`${a.id}.${w.id}`] || {orig:loc(w.year), origEn:loc(w.year)};
   const title = b.title || w.title;
   const url = `${BASE_URL}#${a.id}.${w.id}.${secId}`;
   const d = new Date(), y = d.getFullYear();
@@ -580,6 +580,9 @@ const $ = s=>document.querySelector(s);
 const app = $("#app");
 const esc = s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const t = k=>UI[L][k];
+const loc = v=> (v && typeof v==="object") ? (v[L] ?? v.pt) : v;
+const aName = a=> loc(a.name);
+const aShort = a=> a.short ? loc(a.short) : loc(a.name).split(" ").pop();
 
 function findWork(aid,wid){
   const a = DATA.find(x=>x.id===aid); if(!a) return null;
@@ -614,12 +617,12 @@ function fillPer(v){
 }
 function fillAut(v){
   const as = sPer.value ? authorsOf(sPer.value) : [];
-  sAut.innerHTML = opt("",t("pickAut")) + as.map(a=>opt(a.id,`${a.name} (${a.life})`)).join("");
+  sAut.innerHTML = opt("",t("pickAut")) + as.map(a=>opt(a.id,`${aName(a)} (${loc(a.life)})`)).join("");
   sAut.disabled = !as.length; sAut.value = v||"";
 }
 function fillObr(v){
   const a = DATA.find(x=>x.id===sAut.value);
-  sObr.innerHTML = opt("",t("pickObr")) + (a?a.works.map(w=>opt(w.id,`${w.title} (${w.year})`)).join(""):"");
+  sObr.innerHTML = opt("",t("pickObr")) + (a?a.works.map(w=>opt(w.id,`${w.title} (${loc(w.year)})`)).join(""):"");
   sObr.disabled = !a; sObr.value = v||"";
   bGo.disabled = !sObr.value;
 }
@@ -644,8 +647,8 @@ function renderPeriod(p){
     </header>
     <section class="agrid">
       ${as.map(a=>`<a class="acard" href="#${a.id}">
-        <h2>${esc(a.name)}</h2>
-        <span class="life">${a.life} · ${UI[L].langs[a.lang]}</span>
+        <h2>${esc(aName(a))}</h2>
+        <span class="life">${loc(a.life)} · ${UI[L].langs[a.lang]}</span>
         <span class="ws" lang="${a.lang}">${a.works.map(w=>esc(w.title)).join(" · ")}</span>
         <span class="foot">${t("worksN")(a.works.length)} →</span>
       </a>`).join("")}
@@ -657,15 +660,15 @@ function renderPeriod(p){
 function renderAuthor(a){
   const p = PERIODS.find(x=>x.id===a.period);
   app.innerHTML = `
-    <div class="crumbs"><a href="#">${t("library")}</a><span>›</span><a href="#${p.id}">${p.name[L]}</a><span>›</span><span>${esc(a.name)}</span></div>
+    <div class="crumbs"><a href="#">${t("library")}</a><span>›</span><a href="#${p.id}">${p.name[L]}</a><span>›</span><span>${esc(aName(a))}</span></div>
     <header class="phead">
-      <div class="span">${a.life} · ${UI[L].langs[a.lang]}</div>
-      <h1>${esc(a.name)}</h1>
+      <div class="span">${loc(a.life)} · ${UI[L].langs[a.lang]}</div>
+      <h1>${esc(aName(a))}</h1>
       <p>${t("worksN")(a.works.length)}</p>
     </header>
     <ul class="works alist">
       ${a.works.map(w=>`<li><a href="#${a.id}.${w.id}.${firstSec(w).id}">
-        <span class="yr">${w.year}</span>
+        <span class="yr">${loc(w.year)}</span>
         <span><span class="ot" lang="${a.lang}">${esc(w.title)}</span><br><span class="tt">${esc(w.tr[L])}</span></span>
       </a></li>`).join("")}
     </ul>`;
@@ -686,8 +689,8 @@ function renderReader(aid,wid,sid,pid){
       <button class="toc-toggle" id="tocbtn" aria-expanded="${tocOpen}"><span>${t("contents")}</span><span aria-hidden="true">${tocOpen?"−":"+"}</span></button>
       <div class="toc-body">
         <div class="crumb"><a href="#">${t("library")}</a> › <a href="#${a.period}">${PERIODS.find(x=>x.id===a.period).name[L]}</a></div>
-        <h3><a href="#${a.id}" style="text-decoration:none">${esc(a.name)}</a></h3>
-        <div class="life" style="font-family:var(--mono);font-size:14px;color:var(--ink-soft);margin-bottom:14px">${a.life}</div>
+        <h3><a href="#${a.id}" style="text-decoration:none">${esc(aName(a))}</a></h3>
+        <div class="life" style="font-family:var(--mono);font-size:14px;color:var(--ink-soft);margin-bottom:14px">${loc(a.life)}</div>
         ${a.works.map(ww=>`
           <div class="tocw">
             <a href="#${a.id}.${ww.id}.${firstSec(ww).id}" class="${ww===w?"cur":""}" lang="${a.lang}">${esc(ww.title)}</a>
@@ -712,14 +715,14 @@ function renderReader(aid,wid,sid,pid){
   app.innerHTML = `<div class="reader">${toc}
     <article class="page">
       <header class="whead">
-        <div class="who">${esc(a.name)}</div>
+        <div class="who">${esc(aName(a))}</div>
         <h1 lang="${a.lang}">${esc(w.title)}</h1>
         <div class="trans">${esc(w.tr[L])}</div>
         <div class="meta">
-          <span><b>${t("published")}</b> ${esc(w.pub)}</span>
-          <span><b>${t("base")}</b> ${esc(w.base)}</span>
+          <span><b>${t("published")}</b> ${esc(loc(w.pub))}</span>
+          <span><b>${t("base")}</b> ${esc(loc(w.base))}</span>
           <span><b>${t("lang")}</b> ${UI[L].langs[a.lang]}</span>
-          <span><b>${t("refsys")}</b> ${esc(w.refsys)}</span>
+          <span><b>${t("refsys")}</b> ${esc(loc(w.refsys))}</span>
         </div>
         <p class="about">${esc(w.about[L])}</p>
         <div class="copyhint"><span id="copyhint" style="flex:1;min-width:0"></span>
@@ -742,7 +745,7 @@ function renderReader(aid,wid,sid,pid){
 }
 
 function cite(a,w,p){
-  const last = a.name.split(" ").pop();
+  const last = aShort(a);
   return `${last}, ${w.title}, ${p.ref}.`;
 }
 
@@ -775,12 +778,12 @@ function renderSearch(){
     <p class="hint">${t("hintS")}</p>
     <div class="chips" role="group">
       <button class="chip" data-f="all" aria-pressed="${filterAuthor==="all"}">${t("all")}</button>
-      ${DATA.map(a=>`<button class="chip" data-f="${a.id}" aria-pressed="${filterAuthor===a.id}">${esc(a.name.split(" ").pop())}</button>`).join("")}
+      ${DATA.map(a=>`<button class="chip" data-f="${a.id}" aria-pressed="${filterAuthor===a.id}">${esc(aShort(a))}</button>`).join("")}
     </div>
     ${terms.length
       ? `<div class="hint" style="font-family:var(--mono);font-size:12px">${t("found")(hits.length)}</div>
          ${hits.length? hits.map(h=>`<a class="res" href="#${h.a.id}.${h.w.id}.${h.s.id}.p${h.k+1}">
-            <div class="where">${esc(h.a.name.split(" ").pop())} · <span lang="${h.a.lang}" style="text-transform:none;font-style:italic">${esc(h.w.title)}</span> · <b>${esc(h.p.ref)}</b></div>
+            <div class="where">${esc(aShort(h.a))} · <span lang="${h.a.lang}" style="text-transform:none;font-style:italic">${esc(h.w.title)}</span> · <b>${esc(h.p.ref)}</b></div>
             <div class="snip" lang="${h.a.lang}">${highlight(h.p.t,terms)}</div></a>`).join("") : `<p>${t("none")}</p>`}`
       : `<div class="try">${t("tryit")} ${samples.map(s=>`<button data-try="${s}">${s}</button>`).join("")}</div>`}
   </section>`;
