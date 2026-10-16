@@ -16,7 +16,8 @@ import xml.etree.ElementTree as ET
 T = '{http://www.tei-c.org/ns/1.0}'
 src, out, prefix = sys.argv[1], sys.argv[2], sys.argv[3]
 roman_offset = int(sys.argv[4]) if len(sys.argv) > 4 else None
-MIN_PAGES_TO_SPLIT = 30
+import os
+MIN_PAGES_TO_SPLIT = int(os.environ.get("SPLIT_PAGES", "30"))
 
 ROM = [(1000,'M'),(900,'CM'),(500,'D'),(400,'CD'),(100,'C'),(90,'XC'),(50,'L'),(40,'XL'),(10,'X'),(9,'IX'),(5,'V'),(4,'IV'),(1,'I')]
 def roman(n):
