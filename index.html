@@ -159,6 +159,14 @@ a.era:hover{background:var(--accent-tint)}
 .reader{display:grid;grid-template-columns:290px minmax(0,1fr);gap:44px;padding-block:32px 80px}
 .toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 150px);align-self:start;max-height:calc(100vh - 170px);overflow:auto;font-size:14px;overscroll-behavior:contain}
 .toc-toggle{display:none}
+.pane{min-width:0}
+@media (min-width:861px){
+  body.reading{overflow:hidden}
+  body.reading .reader{height:calc(100dvh - var(--hdr,150px) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));padding-block:0;overflow:hidden}
+  body.reading .toc{position:static;height:100%;max-height:none;overflow-y:auto;padding-block:28px 40px;padding-right:12px;border-right:1px solid var(--rule)}
+  body.reading .pane{height:100%;overflow-y:auto;overscroll-behavior:contain;padding-block:28px 80px;padding-right:12px;scrollbar-gutter:stable}
+  body.reading .para{scroll-margin-top:24px}
+}
 .crumb{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:12px}
 .crumb a{text-decoration:none}
 .crumb a:hover{color:var(--accent)}
@@ -1031,7 +1039,7 @@ function renderReader(aid,wid,sid,pid){
           <p class="refhint" id="copyhint"></p>
         </section>`;
   app.innerHTML = `<div class="reader">${toc}
-    <article class="page">
+    <div class="pane" id="pane"><article class="page">
       ${isFirst ? `<header class="whead">${headTop}${headInfo}</header>` : `
       <details class="wmini">
         <summary><span class="wm-who">${esc(aName(a))}</span><span class="wm-sep">·</span><span class="wm-t" lang="${a.lang}">${esc(w.title)}</span><span class="wm-tr">${esc(w.tr[L])}</span><span class="wm-more">${t("aboutCite")}</span></summary>
@@ -1045,7 +1053,7 @@ function renderReader(aid,wid,sid,pid){
         ${next?`<a href="#${a.id}.${w.id}.${next.id}" style="text-align:right"><small>${t("next")} →</small><span lang="${a.lang}">${esc(next.title)}</span></a>`:"<span></span>"}
       </nav>
       <p class="note">${w.src ? t("fullNote") : t("note")}</p>
-    </article></div>`;
+    </article></div></div>`;
 
   updateHint();
   $("#tocbtn").onclick = ()=>{ tocOpen=!tocOpen; route(); };
@@ -1069,7 +1077,7 @@ function renderReader(aid,wid,sid,pid){
   const curA = tocEl.querySelector(".tree a.cur:not(.wlink)") || tocEl.querySelector(".tree a.cur");
   if(curA && window.matchMedia("(min-width: 861px)").matches){ try{ const r=curA.getBoundingClientRect(), tr=tocEl.getBoundingClientRect(); if(r.top<tr.top||r.bottom>tr.bottom) tocEl.scrollTop += r.top - tr.top - tr.height/3; }catch(err){} }
   if(pid){ const el = document.getElementById(`${a.id}.${w.id}.${sec.id}.${pid}`); if(el) requestAnimationFrame(()=>el.scrollIntoView({block:"center"})); }
-  else window.scrollTo(0,0);
+  else { window.scrollTo(0,0); const pn=document.getElementById("pane"); if(pn) pn.scrollTop=0; }
 }
 
 function cite(a,w,p){
@@ -1134,10 +1142,21 @@ function renderSearch(){
   app.querySelectorAll("[data-try]").forEach(b=>b.onclick=()=>{$("#q").value=b.dataset.try;go("busca");});
 }
 
+/* ---------- two independent scroll areas while reading (wide screens) ---------- */
+function measureHeader(){
+  const top = document.querySelector(".top");
+  if(top) document.documentElement.style.setProperty("--hdr", top.getBoundingClientRect().height + "px");
+}
+window.addEventListener("resize", measureHeader);
+try{ new ResizeObserver(measureHeader).observe(document.querySelector(".top")); }catch(e){}
+
 /* ---------- routing ---------- */
 function go(h){ if(location.hash.slice(1)===h) route(); else location.hash = h; }
 function route(){
   const h = decodeURIComponent(location.hash.slice(1));
+  const reading = h.split(".").length>=2 && h!=="busca";
+  document.body.classList.toggle("reading", reading);
+  measureHeader();
   if(h==="busca"){ renderSearch(); return; }
   const parts = h.split(".");
   const au = DATA.find(a=>a.id===parts[0]);
