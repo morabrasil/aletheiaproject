@@ -6,3 +6,8 @@ Source: Deutsches Textarchiv (DTA), https://www.deutschestextarchiv.de — TEI-P
 
 The DTA transcriptions are distributed under Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0); these derived files are distributed under the same license.
 Changes (`tools/convert_dta.py`): XML converted to JSON; running heads and catchwords removed; end-of-line hyphenation joined; long s (ſ) and vowels with superscript e normalized (ä, ö, ü); editorial corrections (<corr>) used instead of printing errors. Original spelling otherwise kept. Page numbers of the original edition kept as reference markers.
+
+## Critique of Pure Reason, 2nd edition (B, 1787) — `krv_b.json`
+
+- Text: Project Gutenberg eBook #6343 (*Kritik der reinen Vernunft*, 2nd ed.), derived from Projekt Gutenberg-DE (prepared by Gerd Bouillon); public domain. Spelling is modernized as in that source.
+- B pagination: transferred automatically (`tools/build_b.py`, `tools/align.py`) from the OCR of a scan of the 1787 edition (Ghent University copy, digitized by Google, Internet Archive item `bub_gb_qZEPAAAAQAAJ`, Public Domain Mark). The running heads of the scan give the page numbers; the two texts are aligned word by word to place each break. About 12% of the breaks could not be read from the scan and are interpolated; they carry a `~` flag and are shown as approximate.
