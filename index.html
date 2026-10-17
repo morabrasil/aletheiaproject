@@ -198,6 +198,15 @@ a.era:hover{background:var(--accent-tint)}
 .toc .wlink.cur{color:var(--ink);font-weight:500}
 .toc .pendt{color:var(--ink-soft);opacity:.6}
 .toc .pendt small{font-size:12.6px}
+.pgjump{display:flex;gap:7px;align-items:center;margin:0 0 14px}
+.pgjump label{font-family:var(--chrome);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);white-space:nowrap}
+.pgjump input{flex:1;min-width:0;font:inherit;font-size:16px;padding:5px 9px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:1px}
+.pgjump input:focus{outline:none;border-color:var(--accent)}
+.pgjump button{flex:none;border:1px solid var(--accent);background:var(--sheet);color:var(--accent);padding:5px 11px;border-radius:1px;font-size:16px;line-height:1.2}
+.pgjump button:hover{background:var(--accent);color:var(--sheet)}
+.ms.flash,.ref.flash{animation:pgflash 2.6s ease-out;border-radius:2px}
+@keyframes pgflash{0%,45%{background:var(--accent);color:var(--sheet);box-shadow:0 0 0 3px var(--accent)}100%{background:transparent;box-shadow:none}}
+@media (prefers-reduced-motion:reduce){.ms.flash,.ref.flash{animation:none;outline:2px solid var(--accent)}}
 .tocctl{display:flex;gap:9.2px;margin:0 0 11.5px}
 .tocctl button{font-family:var(--chrome);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--rule);background:var(--sheet);color:var(--ink-soft);padding:4.6px 9.2px;border-radius:1px}
 .tocctl button:hover{border-color:var(--accent);color:var(--accent)}
@@ -390,7 +399,7 @@ const UI = {
     prev:"Anterior", next:"Seguinte",
     cite:"Copiar citação", copied:"Citação copiada", copyFail:"Não foi possível copiar. Selecione o texto da citação manualmente.",
     note:"Protótipo: trechos curtos de cada obra; a paginação de referência é indicativa.",
-    sres:"Busca", hintS:"A busca ignora acentos, espíritos do grego e diferenças de grafia antiga (Critik/Kritik, Theil/Teil, seyn/sein, Waare/Ware, ß/ss).",
+    sres:"Busca", hintS:"A busca ignora acentos, espíritos do grego e diferenças de grafia antiga (Critik/Kritik, Theil/Teil, seyn/sein, Waare/Ware, ß/ss). Para ir a uma página, digite a obra e a página: KrV B 132, Rep 514a, Kapital S. 49.",
     all:"Todos", none:"Nenhum trecho encontrado.", found:n=>`${n} ${n===1?"trecho":"trechos"}`,
     tryit:"Experimente:",
     langs:{de:"alemão",la:"latim",grc:"grego antigo"},
@@ -402,7 +411,7 @@ const UI = {
     citLbl:"Citar", plain:"Texto simples", cite:"Copiar referência",
     hint:(st)=>`Selecione um trecho e copie (<kbd>Ctrl</kbd>+<kbd>C</kbd>): ele sai entre aspas com a chamada em <b>${st}</b>, como “…” (Autor, ano, local). Troque a norma no topo da página.`,
     refBtn:"Copiar referência", refTitle:"Como citar esta obra",
-    inCollection:"No acervo", origTitle:"Título original", aboutCite:"Sobre a obra e como citar", expand:"Expandir", collapse:"Recolher", expandAll:"Expandir tudo", collapseAll:"Recolher tudo", approxPg:"Posição aproximada da quebra de página", mixTxt:n=>`${n} ${n===1?"obra completa":"obras completas"} no original, demais em trechos`, completeTxt:"obra completa no original", partialTxt:"trechos selecionados neste protótipo",
+    inCollection:"No acervo", goPage:"Página", go:"Ir", pageNotFound:k=>`Página ${k} não encontrada nesta obra.`, pagesFound:n=>`${n} ${n===1?"página encontrada":"páginas encontradas"}`, origTitle:"Título original", aboutCite:"Sobre a obra e como citar", expand:"Expandir", collapse:"Recolher", expandAll:"Expandir tudo", collapseAll:"Recolher tudo", approxPg:"Posição aproximada da quebra de página", mixTxt:n=>`${n} ${n===1?"obra completa":"obras completas"} no original, demais em trechos`, completeTxt:"obra completa no original", partialTxt:"trechos selecionados neste protótipo",
     excerpt:"trecho", partsN:(n,k)=>`${n} ${k==="b"?"livros":k==="l"?"cartas":"partes"}`,
     loadingWork:"Carregando o texto…", loadFail:"Não foi possível carregar o texto. Recarregue a página para tentar de novo.",
     loadingAll:"Carregando o acervo para a busca…",
@@ -428,7 +437,7 @@ const UI = {
     prev:"Previous", next:"Next",
     cite:"Copy citation", copied:"Citation copied", copyFail:"Couldn't copy. Select the citation text manually.",
     note:"Prototype: short excerpts from each work; reference pagination is indicative.",
-    sres:"Search", hintS:"Search ignores accents, Greek breathings and old spelling (Critik/Kritik, Theil/Teil, seyn/sein, Waare/Ware, ß/ss).",
+    sres:"Search", hintS:"Search ignores accents, Greek breathings and old spelling (Critik/Kritik, Theil/Teil, seyn/sein, Waare/Ware, ß/ss). To go to a page, type the work and the page: KrV B 132, Rep 514a, Kapital S. 49.",
     all:"All", none:"No passages found.", found:n=>`${n} ${n===1?"passage":"passages"}`,
     tryit:"Try:",
     langs:{de:"German",la:"Latin",grc:"Ancient Greek"},
@@ -440,7 +449,7 @@ const UI = {
     citLbl:"Cite", plain:"Plain text", cite:"Copy reference",
     hint:(st)=>`Select a passage and copy it (<kbd>Ctrl</kbd>+<kbd>C</kbd>): it is pasted in quotation marks with a <b>${st}</b> in-text citation, like “…” (Author, year, locator). Change the style at the top of the page.`,
     refBtn:"Copy reference", refTitle:"How to cite this work",
-    inCollection:"In the collection", origTitle:"Original title", aboutCite:"About this work and how to cite", expand:"Expand", collapse:"Collapse", expandAll:"Expand all", collapseAll:"Collapse all", approxPg:"Approximate position of the page break", mixTxt:n=>`${n} complete ${n===1?"work":"works"} in the original, others as excerpts`, completeTxt:"complete works in the original", partialTxt:"selected excerpts in this prototype",
+    inCollection:"In the collection", goPage:"Page", go:"Go", pageNotFound:k=>`Page ${k} not found in this work.`, pagesFound:n=>`${n} ${n===1?"page found":"pages found"}`, origTitle:"Original title", aboutCite:"About this work and how to cite", expand:"Expand", collapse:"Collapse", expandAll:"Expand all", collapseAll:"Collapse all", approxPg:"Approximate position of the page break", mixTxt:n=>`${n} complete ${n===1?"work":"works"} in the original, others as excerpts`, completeTxt:"complete works in the original", partialTxt:"selected excerpts in this prototype",
     excerpt:"excerpt", partsN:(n,k)=>`${n} ${k==="b"?"books":k==="l"?"letters":"parts"}`,
     loadingWork:"Loading the text…", loadFail:"Couldn't load the text. Reload the page to try again.",
     loadingAll:"Loading the collection for search…",
@@ -1005,6 +1014,7 @@ function renderReader(aid,wid,sid,pid){
         <div class="crumb"><a href="#">${t("library")}</a> › <a href="#${a.period}">${PERIODS.find(x=>x.id===a.period).name[L]}</a></div>
         <h3><a href="#${a.id}" style="text-decoration:none">${esc(aName(a))}</a></h3>
         <div class="life" style="font-family:var(--mono);font-size:16px;color:var(--ink-soft);margin-bottom:12px">${loc(a.life)}</div>
+        <form class="pgjump" id="pgform" autocomplete="off"><label for="pgq">${t("goPage")}</label><input id="pgq" type="text" spellcheck="false" placeholder="${pageExample(w)}"><button type="submit" aria-label="${t("go")}">→</button></form>
         <div class="tocctl"><button id="tocall">${t("expandAll")}</button><button id="tocnone">${t("collapseAll")}</button></div>
         <ul class="tree">${a.works.map(workHTML).join("")}</ul>
       </div>
@@ -1065,6 +1075,7 @@ function renderReader(aid,wid,sid,pid){
 
   updateHint();
   $("#tocbtn").onclick = ()=>{ tocOpen=!tocOpen; route(); };
+  $("#pgform").onsubmit = e=>{ e.preventDefault(); const v=$("#pgq").value.trim(); if(v) go(`${a.id}.${w.id}.pg-${pageKey(v)}`); };
   const tocEl = $("#toc");
   tocEl.addEventListener("click",e=>{
     const b = e.target.closest(".tw"); if(!b) return;
@@ -1084,13 +1095,75 @@ function renderReader(aid,wid,sid,pid){
   $("#tocnone").onclick = ()=>{ setAll(false); const wb = tocEl.querySelector(".curw > .trow .tw"); if(wb){ const ul=wb.closest("li").querySelector(":scope > ul"); ul.hidden=false; wb.setAttribute("aria-expanded",true); TOC_OPEN.add(wb.dataset.k);} };
   const curA = tocEl.querySelector(".tree a.cur:not(.wlink)") || tocEl.querySelector(".tree a.cur");
   if(curA && window.matchMedia("(min-width: 861px)").matches){ try{ const r=curA.getBoundingClientRect(), tr=tocEl.getBoundingClientRect(); if(r.top<tr.top||r.bottom>tr.bottom) tocEl.scrollTop += r.top - tr.top - tr.height/3; }catch(err){} }
-  if(pid){ const el = document.getElementById(`${a.id}.${w.id}.${sec.id}.${pid}`); if(el) requestAnimationFrame(()=>el.scrollIntoView({block:"center"})); }
+  if(pid){ const el = document.getElementById(`${a.id}.${w.id}.${sec.id}.${pid}`);
+    if(el){
+      let target = el;
+      if(JUMP){
+        const mk = JUMP.inline ? [...el.querySelectorAll(".ms")].find(m=>pageKey(m.dataset.ms)===pageKey(JUMP.label)) : el.querySelector(".ref");
+        if(mk){ target = mk; mk.classList.add("flash"); }
+        el.classList.remove("hit");
+        JUMP = null;
+      }
+      requestAnimationFrame(()=>target.scrollIntoView({block:"center"}));
+    } }
   else { window.scrollTo(0,0); const pn=document.getElementById("pane"); if(pn) pn.scrollTop=0; }
 }
 
 function cite(a,w,p){
   const last = aShort(a);
   return `${last}, ${w.title}, ${p.ref}.`;
+}
+
+/* ---------- page lookup ---------- */
+const ABBR = {"kant.krv":["krv","krva","kdrv"],"kant.krvb":["krv","krvb","kdrv"],"kant.ku":["ku","kdu"],
+  "marx.kapital":["k1"],"marx.kapital2":["k2"],"marx.kapital3a":["k3"],"marx.kapital3b":["k3"],"platao.republic":["rep","resp","politeia"],"platao.laws":["leg","nomoi"]};
+const pageKey = q => String(q).toLowerCase().replace(/~$/,"")
+  .replace(/^(seite|page|pg\.?|p\.)\s*/,"s").replace(/[\s.¶,]/g,"");
+const stripPre = k => k.replace(/^(a|b|s)(?=\d|[ivxlcdm]+$)/,"");
+function findPage(w,key){
+  const labels = [];
+  for(const s of w.secs){
+    (s.paras||[]).forEach((p,k)=>{
+      labels.push({sid:s.id,k,label:p.ref.replace(/~$/,""),inline:false,p});
+      for(const m of p.t.matchAll(/\u0001([^\u0002]*)\u0002/g)) labels.push({sid:s.id,k,label:m[1].replace(/~$/,""),inline:true,p});
+    });
+  }
+  const tests = [
+    l=>pageKey(l)===key,
+    l=>stripPre(pageKey(l))===key,
+    l=>/^\d+$/.test(key) && /^\d+[a-e]$/.test(pageKey(l)) && pageKey(l).slice(0,-1)===key
+  ];
+  for(const test of tests){ const h = labels.find(x=>test(x.label)); if(h) return h; }
+  return null;
+}
+function parsePageQuery(raw){
+  const m = raw.match(/^(.*?)(?:^|\s+)((?:a|b|s\.?|p\.?|pg\.?|seite)\s*)?(\d+[a-e]?|[ivxlcdm]+)\s*$/i);
+  if(!m) return null;
+  const text = m[1].trim(), pre = (m[2]||"").trim(), num = m[3];
+  if(/^[ivxlcdm]+$/i.test(num) && !pre) return null;
+  if(!pre && !text && !/^\d+[a-e]$/i.test(num)) return null;
+  return {text, key: pageKey(pre+" "+num), label: (pre?pre+" ":"")+num};
+}
+const simp = x => String(x||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^\p{L}\p{N}\s]/gu," ");
+function worksMatching(text, scope){
+  const toks = simp(text).split(/\s+/).filter(Boolean);
+  const out = [];
+  scope.forEach(a=>a.works.forEach(w=>{
+    const hay = simp([a.name&&a.name.pt,a.name&&a.name.en,typeof a.name==="string"?a.name:"",aShort(a),w.title,w.origTitle,w.tr&&w.tr.pt,w.tr&&w.tr.en].join(" ")).split(/\s+/)
+      .concat(ABBR[`${a.id}.${w.id}`]||[]);
+    if(toks.every(tk=>hay.some(h=>h.startsWith(tk)))) out.push({a,w});
+  }));
+  return out;
+}
+function snippetAt(hit){
+  let t = hit.p.t;
+  if(hit.inline){ const i = t.indexOf("\u0001"+hit.label); if(i>=0) t = t.slice(i); }
+  return plain(t).trim().slice(0,240) + (plain(t).length>240?" …":"");
+}
+let JUMP = null;
+function pageExample(w){
+  const r = loc(w.refsys)||"";
+  return r==="A"?"A 51":r==="B"?"B 132":r==="S."?"S. 49":/Stephanus/.test(r)?"17a":/Bekker/.test(r)?"980a21":"";
 }
 
 /* ---------- search ---------- */
@@ -1117,6 +1190,29 @@ function snippet(text,terms){
 }
 function renderSearch(){
   const raw = $("#q").value.trim();
+  const pq = parsePageQuery(raw);
+  if(pq){
+    const scope0 = DATA.filter(a=>filterAuthor==="all" || filterAuthor===a.id);
+    const cand = worksMatching(pq.text, scope0);
+    const pend = cand.filter(x=>x.w.src && !x.w.loaded).map(x=>x.w);
+    if(cand.length && pend.length){
+      app.innerHTML = `<section class="sres"><h1>${t("sres")} · <i>${esc(raw)}</i></h1><p class="hint">${t("loadingAll")}</p></section>`;
+      Promise.all(pend.map(loadWork)).then(()=>{ if(location.hash==="#busca") renderSearch(); })
+        .catch(()=>{ app.querySelector(".hint").textContent = t("loadFail"); });
+      return;
+    }
+    const ph = cand.map(x=>Object.assign({},x,{hit:findPage(x.w,pq.key)})).filter(x=>x.hit);
+    if(ph.length){
+      app.innerHTML = `<section class="sres">
+        <h1>${t("sres")} · <i>${esc(raw)}</i></h1>
+        <p class="hint">${t("pagesFound")(ph.length)}</p>
+        ${ph.slice(0,40).map(x=>`<a class="res" href="#${x.a.id}.${x.w.id}.pg-${pageKey(x.hit.label)}">
+          <div class="where">${esc(aShort(x.a))} · <span lang="${x.a.lang}" style="text-transform:none;font-style:italic">${esc(x.w.title)}</span>${x.w.tr?` <span style="text-transform:none">(${esc(x.w.tr[L])})</span>`:""} · <b>${esc(x.hit.label)}</b></div>
+          <div class="snip" lang="${x.a.lang}">${esc(snippetAt(x.hit))}</div></a>`).join("")}
+      </section>`;
+      return;
+    }
+  }
   const terms = norm(raw).split(/\s+/).filter(x=>x.length>1);
   const scope = DATA.filter(a=>filterAuthor==="all" || filterAuthor===a.id);
   const pending = terms.length ? scope.flatMap(a=>a.works).filter(w=>w.src && !w.loaded) : [];
@@ -1133,7 +1229,7 @@ function renderSearch(){
       if(terms.every(q=>n.includes(q))) hits.push({a,w,s,p,k});
     })));
   });
-  const samples = ["ἀλήθεια","ψυχή","Vernunft","Ware","substantia"];
+  const samples = ["ἀλήθεια","ψυχή","Vernunft","Ware","KrV B 132","Rep 514a","Kapital S. 49"];
   app.innerHTML = `<section class="sres">
     <h1>${t("sres")}${raw?` · <i style="font-style:italic">${esc(raw)}</i>`:""}</h1>
     <p class="hint">${t("hintS")}</p>
@@ -1170,6 +1266,14 @@ function route(){
   if(h==="busca"){ renderSearch(); return; }
   const parts = h.split(".");
   const au = DATA.find(a=>a.id===parts[0]);
+  if(parts.length>=3 && au && parts[2].startsWith("pg-")){
+    syncPicker(au.period,au.id,parts[1]);
+    const f = findWork(parts[0],parts[1]); if(!f) return renderHome();
+    if(f.w.src && !f.w.loaded) return renderReader(parts[0],parts[1]);
+    const key = parts[2].slice(3), hit = findPage(f.w,key);
+    if(hit){ JUMP = hit; return renderReader(parts[0],parts[1],hit.sid,"p"+(hit.k+1)); }
+    renderReader(parts[0],parts[1]); toast(t("pageNotFound")(key.toUpperCase())); return;
+  }
   if(parts.length>=2 && au){ syncPicker(au.period,au.id,parts[1]); return renderReader(parts[0],parts[1],parts[2],parts[3]); }
   const per = PERIODS.find(p=>p.id===h);
   if(per && authorsOf(per.id).length){ syncPicker(per.id,"",""); return renderPeriod(per); }
