@@ -147,3 +147,16 @@ for s in data['secs']:
     s['title'] = re.sub(r'[A-Za-zÄÖÜäöüß]+', lambda m: (lambda w: (lambda c: (c[0].upper()+c[1:] if w[0].isupper() else c) if c else w)(modern2orig[w.lower()].most_common(1)[0][0] if w.lower() in modern2orig and (lex.get(w,0)+lex.get(w.lower(),0)+lex.get(w.capitalize(),0)) < sum(modern2orig[w.lower()].values()) else None))(m.group(0)), s['title'])
 json.dump(data, open('krv_b_orig.json', 'w', encoding='utf8'), ensure_ascii=False, separators=(',', ':'))
 print(stats, file=sys.stderr)
+
+# section sign in 1787 style: "§. 16." in headings, "§. 3" in running text
+def fix_par(t, heading):
+    t = re.sub(r'§§\s+(?=\d)', '§§. ', t)
+    if heading:
+        t = re.sub(r'§\s+(\d+)\.?(?=\s|$)', r'§. \1.', t)
+    return re.sub(r'§\s+(\d+)', r'§. \1', t)
+data = json.load(open('krv_b_orig.json', encoding='utf8'))
+for s in data['secs']:
+    s['title'] = fix_par(s['title'], True)
+    for p in s['paras']:
+        p[2] = fix_par(p[2], p[1] == 'h')
+json.dump(data, open('krv_b_orig.json', 'w', encoding='utf8'), ensure_ascii=False, separators=(',', ':'))
